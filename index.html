@@ -1,0 +1,977 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark">
+<title>Antigone &middot; A Companion</title>
+<style>
+/* ============================================================
+   ANTIGONE — palette grounded in the play's materials:
+   turned earth / sealed tomb (ground), bone & dust (text),
+   dried blood (death, sparing), buried bronze (the sacred &
+   the interactive). Not pottery black-and-red; not cream+clay.
+   Signature: a handful of dust scattered along every threshold.
+   ============================================================ */
+:root{
+  --earth:   #14100c;   /* ground: turned earth, the unlit tomb */
+  --earth-2: #1f1811;   /* raised surface / cards */
+  --earth-3: #29211a;   /* hover / deeper panel */
+  --bone:    #eae1d0;   /* primary text */
+  --dust:    #b3a585;   /* muted text, the parched plain */
+  --stone:   #6e685c;   /* hairlines, tracked labels */
+  --bronze:  #c6a052;   /* interactive: links, xrefs, active — the sacred, the edict */
+  --bronze-d:#8f7433;
+  --oxblood: #a2382b;   /* death only */
+  --oxblood-d:#6f2620;
+  --patina:  #7c8a72;   /* the unwritten law, the chthonic */
+  --maxread: 63ch;
+  --disp: "Optima","Palatino Linotype",Palatino,"Iowan Old Style",Georgia,serif;
+  --body: "Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+  --util: "Avenir Next","Segoe UI",system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;background:var(--earth);min-height:100vh;color-scheme:dark}
+body{min-height:100vh}
+body{
+  margin:0; background:var(--earth); color:var(--bone);
+  font-family:var(--body); font-size:18px; line-height:1.6;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+  overflow-wrap:break-word;
+}
+a{color:inherit}
+button{font-family:inherit}
+
+/* dust-scatter divider — the signature, reused at thresholds */
+.dust{
+  height:14px; border:0; margin:0;
+  background-image:
+    radial-gradient(1.5px 1.5px at 10% 60%, var(--dust) 40%, transparent 42%),
+    radial-gradient(1px 1px at 22% 30%, var(--dust) 40%, transparent 42%),
+    radial-gradient(1.5px 1.5px at 33% 70%, var(--stone) 40%, transparent 42%),
+    radial-gradient(1px 1px at 45% 45%, var(--dust) 40%, transparent 42%),
+    radial-gradient(1.5px 1.5px at 57% 62%, var(--bronze-d) 40%, transparent 42%),
+    radial-gradient(1px 1px at 68% 35%, var(--dust) 40%, transparent 42%),
+    radial-gradient(1.5px 1.5px at 79% 66%, var(--stone) 40%, transparent 42%),
+    radial-gradient(1px 1px at 90% 40%, var(--dust) 40%, transparent 42%);
+  opacity:.7;
+}
+
+/* ---- shell ---- */
+.wrap{max-width:920px;margin:0 auto;padding:0 20px}
+header.top{
+  position:sticky;top:0;z-index:40;
+  background:rgba(20,16,12,.94);backdrop-filter:blur(6px);
+  border-bottom:1px solid var(--earth-3);
+}
+.top .row{max-width:920px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;gap:16px}
+.brand{
+  font-family:var(--disp);letter-spacing:.24em;text-transform:uppercase;
+  font-size:.86rem;color:var(--bone);cursor:pointer;background:none;border:0;padding:6px 0;
+}
+.brand b{color:var(--bronze);font-weight:600}
+nav.modes{margin-left:auto;display:flex;gap:2px;flex-wrap:wrap}
+nav.modes button{
+  background:none;border:0;color:var(--dust);cursor:pointer;
+  font-family:var(--util);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:7px 10px;border-radius:3px;
+}
+nav.modes button:hover{color:var(--bone);background:var(--earth-2)}
+nav.modes button[aria-current="true"]{color:var(--earth);background:var(--bronze)}
+
+main{padding:28px 0 96px;min-height:70vh}
+.fade{animation:fade .5s ease both}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ---- home / hero ---- */
+.hero{padding:40px 0 8px}
+.eyebrow{
+  font-family:var(--util);font-size:.72rem;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--stone);margin:0 0 18px;
+}
+.hero h1{
+  font-family:var(--disp);font-weight:600;line-height:1.12;margin:0;
+  font-size:clamp(2rem,6.4vw,3.5rem);letter-spacing:.005em;
+}
+.hero h1 .b{color:var(--oxblood)}
+.hero h1 .g{color:var(--bronze)}
+.hero p.lede{max-width:58ch;color:var(--dust);font-size:1.06rem;margin:22px 0 0}
+
+.ways{display:grid;grid-template-columns:1fr;gap:12px;margin:30px 0 0}
+@media(min-width:640px){.ways{grid-template-columns:1fr 1fr}}
+.way{
+  text-align:left;cursor:pointer;background:var(--earth-2);border:1px solid var(--earth-3);
+  border-radius:7px;padding:18px 18px 16px;color:var(--bone);transition:border-color .18s,transform .18s;
+}
+.way:hover{border-color:var(--bronze-d);transform:translateY(-2px)}
+.way .k{font-family:var(--util);font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--bronze);display:block;margin-bottom:7px}
+.way .t{font-family:var(--disp);font-size:1.22rem;display:block;margin-bottom:5px}
+.way .d{color:var(--dust);font-size:.92rem;line-height:1.45}
+
+/* ---- generic view heading ---- */
+.vhead{margin:6px 0 20px}
+.vhead .eyebrow{margin-bottom:10px}
+.vhead h2{font-family:var(--disp);font-weight:600;font-size:1.9rem;margin:0;letter-spacing:.01em}
+.vhead p{color:var(--dust);max-width:60ch;margin:12px 0 0}
+
+/* ---- themes view ---- */
+.cluster{margin:0 0 26px}
+.cluster h3{
+  font-family:var(--disp);font-size:1.28rem;margin:0 0 4px;color:var(--bone);
+  border-left:3px solid var(--bronze);padding-left:12px;
+}
+.cluster .blurb{color:var(--dust);font-size:.95rem;margin:0 0 12px;padding-left:15px;max-width:58ch}
+.chips{display:flex;flex-wrap:wrap;gap:8px;padding-left:15px}
+
+/* entity chip (used in themes, house, scenes, rels) */
+.chip{
+  cursor:pointer;background:var(--earth-2);border:1px solid var(--earth-3);
+  border-radius:20px;padding:7px 14px;color:var(--bone);font-size:.9rem;
+  display:inline-flex;align-items:center;gap:8px;transition:border-color .16s,background .16s;
+}
+.chip:hover{border-color:var(--bronze-d);background:var(--earth-3)}
+.chip .tag{font-family:var(--util);font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--stone)}
+.chip.major{border-color:#3a2f22}
+.chip.major .dotm{width:5px;height:5px;border-radius:50%;background:var(--bronze);display:inline-block}
+
+/* ---- by the play (scenes) ---- */
+.spine{border-left:2px solid var(--earth-3);margin-left:6px;padding-left:0}
+.beat{position:relative;padding:0 0 4px 26px;margin:0 0 18px}
+.beat::before{content:"";position:absolute;left:-7px;top:6px;width:11px;height:11px;border-radius:50%;background:var(--earth);border:2px solid var(--stone)}
+.beat.ode::before{background:var(--bronze);border-color:var(--bronze)}
+.beat .bk{font-family:var(--util);font-size:.64rem;letter-spacing:.2em;text-transform:uppercase;color:var(--stone)}
+.beat.ode .bk{color:var(--bronze)}
+.beat h4{font-family:var(--disp);font-size:1.16rem;margin:2px 0 6px}
+.beat .bs{color:var(--dust);font-size:.94rem;margin:0 0 10px;max-width:60ch}
+
+/* ---- house (relational) ---- */
+.houses{display:grid;grid-template-columns:1fr;gap:22px}
+@media(min-width:760px){.houses{grid-template-columns:1fr 1fr}}
+.housecard{background:var(--earth-2);border:1px solid var(--earth-3);border-radius:9px;padding:20px}
+.housecard h3{font-family:var(--disp);font-size:1.2rem;margin:0 0 3px}
+.housecard .sub{font-family:var(--util);font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--stone);margin:0 0 16px}
+.gen{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 6px;align-items:center}
+.genlabel{font-family:var(--util);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:var(--dust);width:100%;margin-top:8px}
+.hinge{margin-top:22px;padding-top:16px;border-top:1px dashed var(--earth-3);color:var(--dust);font-size:.92rem;max-width:60ch}
+.hinge b{color:var(--bone);font-weight:600}
+
+/* ---- reference ---- */
+.refgrid{display:grid;grid-template-columns:1fr;gap:2px}
+.refrow{display:flex;gap:12px;align-items:baseline;padding:11px 8px;border-bottom:1px solid var(--earth-2);cursor:pointer}
+.refrow:hover{background:var(--earth-2)}
+.refrow .rn{font-family:var(--disp);font-size:1.06rem;min-width:34%}
+.refrow .re{color:var(--dust);font-size:.88rem;line-height:1.4}
+.refrow .rt{font-family:var(--util);font-size:.56rem;letter-spacing:.12em;text-transform:uppercase;color:var(--stone);min-width:76px;text-align:right}
+
+/* ---- entity page ---- */
+.entity{max-width:var(--maxread)}
+.entity .kicker{font-family:var(--util);font-size:.66rem;letter-spacing:.2em;text-transform:uppercase;color:var(--stone);display:flex;gap:12px;align-items:center;margin:0 0 8px}
+.entity .kicker .tier{color:var(--bronze)}
+.entity h1{font-family:var(--disp);font-weight:600;font-size:clamp(2rem,7vw,2.9rem);margin:0;line-height:1.1}
+.entity .aka{color:var(--dust);font-style:italic;margin:6px 0 0}
+.essence{font-size:1.24rem;line-height:1.5;color:var(--bone);margin:18px 0 4px;max-width:56ch}
+.essence .xref{color:var(--bronze)}
+
+section.sec{border-top:1px solid var(--earth-2);margin-top:14px}
+section.sec > summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:12px;padding:16px 0 12px}
+section.sec > summary::-webkit-details-marker{display:none}
+section.sec > summary .h{font-family:var(--disp);font-size:1.24rem;color:var(--bone)}
+section.sec > summary .mk{margin-left:auto;color:var(--stone);font-family:var(--util);font-size:1.2rem;line-height:1;transition:transform .2s}
+section.sec[open] > summary .mk{transform:rotate(45deg)}
+section.sec .body{padding:0 0 18px}
+section.sec .body p{margin:0 0 14px}
+
+/* depth panels: Beneath / Beyond */
+.panel{border:1px solid var(--earth-3);border-radius:8px;margin:14px 0 0;overflow:hidden;background:var(--earth-2)}
+.panel > summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:12px;padding:15px 18px}
+.panel > summary::-webkit-details-marker{display:none}
+.panel > summary .pl{font-family:var(--util);font-size:.72rem;letter-spacing:.22em;text-transform:uppercase}
+.panel.beneath > summary .pl{color:var(--patina)}
+.panel.beyond > summary .pl{color:var(--bronze)}
+.panel > summary .pt{font-family:var(--disp);font-size:1.02rem;color:var(--dust)}
+.panel > summary .mk{margin-left:auto;color:var(--stone);font-family:var(--util);transition:transform .2s}
+.panel[open] > summary .mk{transform:rotate(45deg)}
+.panel .pbody{padding:2px 18px 18px}
+.panel .pbody p{margin:0 0 13px;font-size:.98rem}
+.panel .pbody p:last-child{margin-bottom:0}
+.panel .xref{color:var(--bronze)}
+
+.rels{margin:26px 0 0}
+.rels h3{font-family:var(--util);font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--stone);margin:0 0 12px}
+.rel{display:flex;gap:12px;align-items:baseline;padding:9px 0;border-bottom:1px solid var(--earth-2);cursor:pointer}
+.rel:hover .rname{color:var(--bronze)}
+.rel .rname{font-family:var(--disp);font-size:1.04rem;min-width:38%}
+.rel .rlab{color:var(--dust);font-size:.9rem}
+
+.backbar{margin:0 0 18px}
+.backbtn{background:none;border:0;color:var(--dust);cursor:pointer;font-family:var(--util);font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;padding:6px 0}
+.backbtn:hover{color:var(--bronze)}
+
+/* inline cross-reference term */
+.xref{color:var(--bronze);text-decoration:none;border-bottom:1px dotted var(--bronze-d);cursor:pointer;white-space:nowrap}
+.xref:hover{border-bottom-style:solid}
+.xref.broken{color:var(--oxblood);border-color:var(--oxblood)}
+
+/* ---- popover (peek) ---- */
+#pop{
+  position:fixed;z-index:60;max-width:320px;width:calc(100vw - 32px);
+  background:var(--earth-3);border:1px solid var(--bronze-d);border-radius:9px;
+  box-shadow:0 18px 50px rgba(0,0,0,.6);padding:15px 16px;display:none;
+}
+#pop.show{display:block;animation:fade .16s ease both}
+#pop .pk{font-family:var(--util);font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--stone);margin:0 0 4px}
+#pop .pn{font-family:var(--disp);font-size:1.16rem;margin:0 0 6px}
+#pop .pe{color:var(--dust);font-size:.92rem;line-height:1.45;margin:0 0 12px}
+#pop .po{background:var(--bronze);color:var(--earth);border:0;border-radius:5px;cursor:pointer;font-family:var(--util);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;padding:8px 14px}
+#pop .po:hover{background:var(--bone)}
+@media(max-width:560px){
+  #pop{left:16px!important;right:16px;width:auto;bottom:16px!important;top:auto!important;max-width:none}
+}
+
+footer.foot{color:var(--stone);font-family:var(--util);font-size:.7rem;letter-spacing:.08em;text-align:center;padding:10px 0 40px}
+
+:focus-visible{outline:2px solid var(--bronze);outline-offset:2px;border-radius:2px}
+/* pronunciation respelling */
+.entity .pron{font-family:var(--util);font-size:.82rem;letter-spacing:.04em;color:var(--dust);margin:9px 0 0}
+.entity .pron b{color:var(--patina);font-weight:600}
+#pop .ppron{font-family:var(--util);font-size:.72rem;letter-spacing:.03em;color:var(--patina);margin:-2px 0 9px}
+/* start-here orientation */
+.orient{max-width:64ch;margin:32px 0 6px;padding:20px 22px 8px;background:var(--earth-2);border:1px solid var(--earth-3);border-left:3px solid var(--bronze);border-radius:8px}
+.orient-h{font-family:var(--util);font-size:.72rem;letter-spacing:.26em;text-transform:uppercase;color:var(--bronze);margin:0 0 15px}
+.orient p{margin:0 0 13px;font-size:1rem;line-height:1.58;color:var(--bone)}
+.orient p b{display:block;font-family:var(--util);font-size:.68rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--bronze);margin:0 0 3px}
+.orient .xhint{color:var(--bronze);border-bottom:1px dotted var(--bronze-d)}
+/* scene kicker gloss */
+.beat .bkg{color:var(--dust);margin-left:10px;text-transform:none;letter-spacing:.02em;font-size:.92em}
+.beat .panel{margin-top:10px}
+.panel.scene-stage > summary .pl{color:var(--dust)}
+.panel.scene-turns > summary .pl{color:var(--bronze)}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* --- opaque-ground guarantee (literal colors; must win everywhere) --- */
+html{background-color:#14100c !important;color-scheme:dark}
+body{background-color:#14100c !important;color:#eae1d0 !important;}
+body::before{content:"";position:fixed;top:0;left:0;right:0;bottom:0;width:100%;height:100%;background-color:#14100c;z-index:-1;pointer-events:none}
+header.top{background-color:rgba(20,16,12,.97) !important}
+main{background-color:transparent}
+#pop{background-color:#1f1811 !important}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="row">
+    <button class="brand" onclick="go('#home')">ANTIGONE <b>&middot;</b> a companion</button>
+    <nav class="modes" id="modes"></nav>
+  </div>
+</header>
+<hr class="dust">
+<main><div class="wrap" id="view"></div></main>
+<hr class="dust">
+<footer class="foot">SOPHOCLES &middot; c. 441 BCE &middot; an offline companion, not the play itself</footer>
+
+<div id="pop" role="dialog" aria-label="Preview"></div>
+
+<script>
+"use strict";
+
+/* ============================================================
+   DATA — authored as data, never hand-written HTML.
+   Non-ASCII as escapes; no backticks / ${} inside data strings.
+   [[id|label]] tokens become peek/commit cross-links at render.
+   ============================================================ */
+
+var THEMES = [
+  { id:"law",   name:"Law & Defiance",  blurb:"The edict of the city against the older, unwritten laws of the gods and the dead \u2014 and the girl who will not choose the city." },
+  { id:"dead",  name:"Family & the Dead", blurb:"What the living owe a corpse; the claims of blood over the claims of the state; grief that will not be governed." },
+  { id:"power", name:"Power & the City", blurb:"A new ruler, a shaken city, and the brittle certainty of a man who mistakes his will for order." },
+  { id:"house", name:"The Doomed House",  blurb:"The curse on the line of Labdacus, working itself out to the last child of Oedipus." }
+];
+
+var TYPES = {
+  character:"Character", concept:"Idea", place:"Place", object:"Object", chorus:"Chorus"
+};
+
+/* Scenes for the "By the Play" spine (Sophocles' structure). */
+var SCENES = [
+  { k:"Prologue", ode:false, g:"Opening scene", h:"Before dawn, two sisters", s:"In the grey before dawn, outside the palace of [[thebes|Thebes]], [[antigone|Antigone]] draws her sister [[ismene|Ismene]] aside with terrible news. Their uncle [[creon|Creon]], now king, has ordered their brother [[eteocles|Eteocles]] buried with honor while the other, [[polynices|Polynices]], is left to rot on the plain \u2014 no grave, no rite, on pain of death. Antigone means to bury him regardless, and asks for help.\n\nIsmene, afraid, refuses: they are only women, she pleads, and cannot fight the city. The sisters part in anger. In these first minutes the whole engine of the play is set running \u2014 [[creon|Creon]]'s [[edict|edict]] against the [[philia|claim of blood]], the law of the city against the [[unwritten_law|law of the gods]].", ents:["antigone", "ismene", "polynices", "edict"], stage:"A Greek play opened with a <em>prologos</em> \u2014 a scene before the chorus arrived, used to set the situation. Here it is a hushed pre-dawn conference, the two sisters alone, both roles played by masked men, as every role was. With only two or three actors sharing all the parts, Sophocles keeps the stage bare and lets the words do the work; the audience, who knew the myth cold, felt the dread under the whispering at once.", turns:"Everything to come is already latent here. The two irreconcilable claims \u2014 the city's [[edict|law]] and the [[unwritten_law|law owed the dead]] \u2014 and the two unbending temperaments are set before the chorus has even entered. Watch [[antigone|Antigone]]'s scorn for caution and her vow to lie beside the brother she loves: the play's whole moral engine, stated in miniature." },
+  { k:"Parodos", ode:true, g:"Entry song \u00b7 the chorus arrives", h:"The chorus greets the dawn", s:"As the sun rises the [[chorus|elders of Thebes]] file in singing the play's first ode. They celebrate deliverance: the night before, [[seven|seven captains]] led by the exiled [[polynices|Polynices]] stormed the city's gates, and [[thebes|Thebes]] has survived \u2014 though the two brothers fell by each other's hands. The song is bright with relief, an enemy driven off like a routed eagle. But it rings hollow against what the audience already knows: the corpse on the plain, and the new king's [[edict|edict]] that will turn this victory into ruin.", ents:["chorus", "seven", "thebes"], stage:"The <em>parodos</em> is the chorus's entrance-song. Up to fifteen elders filed in along the side ramps into the round dancing-floor, the <em>orchestra</em>, moving to the reedy double-pipe called the aulos. Odes came in matched pairs \u2014 strophe and antistrophe, turn and counter-turn \u2014 the dance reversing direction with the music. That music and choreography are wholly lost; what survives is the words alone.", turns:"The joy is the point, and the trap. Sophocles lets the city celebrate its survival at the very moment its new king prepares the act that will undo it \u2014 dramatic irony the audience feels in the gap between the song and what they know is coming. It also sets the civic stakes: [[thebes|Thebes]] is not a backdrop but a community with everything to lose." },
+  { k:"First Episode", ode:false, g:"Spoken scene", h:"The edict, and dust on the body", s:"[[creon|Creon]] takes the stage as king and lays out his creed to the elders: the city before all, no traitor honored beside a patriot \u2014 and so [[polynices|Polynices]] stays unburied. It sounds, at first, like firm statecraft. Then a [[sentry|sentry]] stumbles in, terrified, with impossible news: someone has scattered [[dust|dust]] over the body, performing the forbidden rite, and no one saw how.\n\nSuspecting a plot against his rule, [[creon|Creon]] sends the guard back under threat of death to find the culprit. The frailest of acts \u2014 a handful of dry earth \u2014 has already broken the king's whole [[edict|law]].", ents:["creon", "sentry", "dust", "edict"], stage:"[[creon|Creon]]'s first speech is a set-piece: the new ruler steering the ship of state, a metaphor the Greeks loved. Against its high formality Sophocles sets the [[sentry|sentry]], written in low, colloquial, half-comic language \u2014 a deliberate loosening of tension before the grip tightens. The scene shows the economy of the form too, just two speaking actors and the silent [[chorus|chorus]] carrying the whole confrontation.", turns:"[[creon|Creon]]'s case is put at full strength, and that matters \u2014 the play refuses to make him a straw man, so his fall will be a real one. His principle of order collides for the first time with reverence for the dead, and the [[dust|handful of dust]] is the hairline crack that will widen into catastrophe." },
+  { k:"First Stasimon", ode:true, g:"Choral ode", h:"Ode to Man", s:"The chorus sings the play's most famous song, the [[ode_to_man|Ode to Man]]: many things are formidable, it begins, and none more formidable than man. It surveys all he masters \u2014 the sea, the earth, the beasts, speech and law and the building of cities \u2014 and the one thing he cannot: an escape from death. The same restless genius, the [[chorus|elders]] warn, bends toward ruin as readily as toward good. Sung just after [[creon|Creon]]'s overreach and the unseen burial, it hangs over king and rebel alike \u2014 a hymn of wonder shadowed by dread.", ents:["ode_to_man", "chorus", "hubris"], stage:"A <em>stasimon</em> is a standing-song the [[chorus|chorus]] performs between episodes, sung and danced rather than spoken. The odes are where tragedy pulls back from plot to reflect, and this one floats almost free of the story to weigh humankind itself. Its force rides on a single word, <em>deinos</em>, at once wondrous and terrible \u2014 a doubleness the music would have carried in a way the page cannot.", turns:"The play's philosophical centre of gravity. Human power dazzles and appalls in the same breath, and the ode quietly holds both [[creon|Creon]] and [[antigone|Antigone]] up to judgement: is their fierce mastery greatness, or the [[hubris|overreach]] that ruins? It poses the question and, pointedly, refuses to answer it." },
+  { k:"Second Episode", ode:false, g:"Spoken scene", h:"Caught", s:"The [[sentry|sentry]] returns in triumph, dragging [[antigone|Antigone]]. The guards had swept the body bare and waited; at midday she came back, found it exposed again, cried out, and covered it a second time in the open. Before [[creon|Creon]] she does not deny the deed \u2014 she claims it, and defends it with the play's ringing appeal to the [[unwritten_law|unwritten laws]] of the gods, which no mortal edict can overrule.\n\nKing and niece lock in a duel of wills neither will yield. [[ismene|Ismene]], breaking, now tries to share the blame and die beside her sister; [[antigone|Antigone]] refuses her the death she would not help earn. Two women stand condemned \u2014 and [[creon|Creon]] cannot see that crushing a girl this way is its own kind of defeat.", ents:["sentry", "antigone", "creon", "ismene", "unwritten_law"], stage:"This is the play's central <em>agon</em>, its formal debate: two positions argued to the hilt in long matched speeches, then narrowing into <em>stichomythia</em>, rapid line-for-line exchange like verbal sword-fighting. The entry of [[ismene|Ismene]] pushes the three-actor limit and shifts the geometry from a duel to something crueler, as [[antigone|Antigone]] turns even her sister away.", turns:"The collision at full voltage \u2014 and the birth of an argument the West never finished. [[antigone|Antigone]]'s appeal to the [[unwritten_law|unwritten laws]] is the founding text for every later claim that a higher justice stands above the state's command. Watch her refuse [[ismene|Ismene]] a share of the death: it seals her greatness and her terrible isolation in one stroke." },
+  { k:"Second Stasimon", ode:true, g:"Choral ode", h:"The doom of the house", s:"The [[chorus|chorus]] turns to the [[house_curse|curse on the royal house]], watching ruin break over generation after generation like a black swell rolling down the sea. They trace the doom of the line of [[oedipus|Oedipus]] to the two sisters who are now all that remain of it. The song lifts the palace quarrel into something older and vaster \u2014 a bloodline working out its fate, the gods' hand behind it \u2014 and quietly reminds us that [[antigone|Antigone]]'s defiance is also an inheritance.", ents:["chorus", "house_curse", "oedipus"], stage:"Between the clashes the [[chorus|chorus]] widens the lens. A choral ode can leap across generations in a few stanzas, and here it sinks the present quarrel into the deep past of the [[house_curse|cursed house]]. The technique lets Sophocles supply mythic depth and foreboding without a single new event on stage \u2014 doom felt as music.", turns:"The ode reframes the whole conflict. What looked like one girl's choice is set inside an inherited doom, and the play's hardest question surfaces: is this fate, or character repeating itself down a [[house_curse|bloodline]]? It complicates any simple reading of [[antigone|Antigone]] as pure free will \u2014 she is also her father's daughter." },
+  { k:"Third Episode", ode:false, g:"Spoken scene", h:"Father and son", s:"[[haemon|Haemon]], [[creon|Creon]]'s son and [[antigone|Antigone]]'s betrothed, comes to his father \u2014 not in revolt but in appeal. He begins in deference, then presses: the whole city grieves for the girl, and a wise ruler bends like a tree in flood rather than snap. It is the voice of reason and of [[polis_oikos|the people]] \u2014 and [[creon|Creon]] hears only a son unmanned by a woman.\n\nThe debate hardens into open combat, line trading against line, until [[haemon|Haemon]] storms out with a warning his father takes as a threat. Reason has failed; only grief is left to teach the king. Beneath the whole scene runs the force the next ode will name.", ents:["haemon", "creon", "antigone", "eros"], stage:"A second <em>agon</em>, father against son. It moves from [[haemon|Haemon]]'s careful, deferential opening into blistering <em>stichomythia</em>, the lines shortening as tempers climb, until he breaks off and rushes out. Greek staging kept such exits charged: a figure who storms through the doors is rarely seen alive again, and the audience knew to brace.", turns:"Two turns at once. We learn the city secretly sides with [[antigone|Antigone]] \u2014 so [[creon|Creon]] is overruling his people, not defending them \u2014 and we watch him cross from statesman to tyrant with the claim that the city belongs to its ruler. The public stakes and the private ruin of [[haemon|Haemon]] fuse here." },
+  { k:"Third Stasimon", ode:true, g:"Choral ode", h:"Ode to Love", s:"The [[chorus|chorus]] sings to [[eros|Eros]], god of desire \u2014 unconquered in battle, who seizes gods and mortals alike and turns the steadiest heart to madness. They mean [[haemon|Haemon]], driven to break with his father over love of [[antigone|Antigone]]. But the song's darker point is that love here is no tenderness: it is one more power beyond human control, a tragic force pulling father and son toward destruction. Even as they sing, [[antigone|Antigone]] is led out toward her sentence, and the elders can barely watch.", ents:["chorus", "eros", "haemon", "antigone"], stage:"One of the shortest odes in the play, and among the most quoted. The [[chorus|chorus]] personifies [[eros|Eros]] and Aphrodite as raw cosmic forces rather than tender feeling. Odes like this comment on the action side-on, naming the hidden power behind a scene just witnessed instead of advancing the plot.", turns:"The ode names the hidden engine of the scene just past: [[eros|love]], which has turned [[haemon|Haemon]] against his father. It widens the disaster \u2014 what began as a clash over law is now devouring a family and a marriage. Desire enters as one more ungovernable force, and it is on the side of ruin." },
+  { k:"Fourth Episode", ode:false, g:"Spoken scene", h:"The bride of stone", s:"[[antigone|Antigone]] is led toward the [[tomb|rock chamber]] where she will be sealed alive, and she sings her own lament \u2014 a wedding-song turned inside out. There will be no marriage now, no children; the cave will be her bridal room and death her only bridegroom. She grieves the life she is giving up even as she refuses to regret the act.\n\nHere too comes the play's strangest and most argued-over reasoning: a brother, with both parents dead, can never be replaced, as a husband or child might be \u2014 and so this duty stood above all others. The [[chorus|elders]] pity her and do not save her. She goes into the dark certain she was right, and entirely alone.", ents:["antigone", "tomb", "chorus"], stage:"Here the form turns to lament \u2014 a <em>kommos</em>, a grief-song shared between actor and [[chorus|chorus]], [[antigone|Antigone]]'s voice answering theirs as she is led to the [[tomb|tomb]]. It is a living funeral, staged as sung mourning. This is also where the text itself grows uncertain: [[antigone|Antigone]]'s cold reasoning about the irreplaceable brother is doubted by some editors as a later hand, and by Goethe as lines he wished away.", turns:"The emotional peak, and the point where sympathy swings fully to [[antigone|Antigone]] as she mourns the life she will never have. It is also the play's most unsettling moment: her reasoning that a brother outweighs any husband or child forces the question of whether she is heroine or fanatic. The [[tomb|living burial]] becomes the central image \u2014 a woman sealed between the living and the dead." },
+  { k:"Fourth Stasimon", ode:true, g:"Choral ode", h:"Others, too, were shut away", s:"The [[chorus|chorus]] reaches back for old myths of others walled up or bound \u2014 a princess shut in a bronze chamber, others imprisoned by the gods \u2014 trying to fit [[antigone|Antigone]]'s fate into a pattern and so make it bearable. The comfort is cold and the parallels uneasy; the song half-consoles and half-unsettles. It is the community grasping for meaning even as it lets a girl be sealed away, unable to square what it feels with what its king has commanded.", ents:["chorus", "tomb", "antigone"], stage:"The [[chorus|chorus]] consoles by analogy, a device called the mythic <em>exemplum</em>: it lines up old stories of others shut in bronze rooms or bound by the gods and sets [[antigone|Antigone]] among them. The comfort is deliberately imperfect \u2014 the parallels do not quite fit, and the unease is the point, a community talking itself past what it cannot bear to watch.", turns:"The chorus tries to make the fate bearable and cannot, and that failure is the meaning. The play declines to hand us easy consolation or a tidy lesson; the elders' unease mirrors the audience's, and the refusal of comfort is its own kind of honesty." },
+  { k:"Fifth Episode", ode:false, g:"Spoken scene", h:"The blind prophet", s:"[[tiresias|Tiresias]], the blind seer of [[thebes|Thebes]], is led on by a boy with a dire warning. The altars will not burn, the birds tear at one another \u2014 the city is sick with [[miasma|pollution]] because a corpse lies unburied. He tells [[creon|Creon]] plainly: a king who keeps the dead from the earth and buries the living in it will pay a corpse of his own blood.\n\n[[creon|Creon]] first accuses him of taking bribes, then, shaken as never before, breaks \u2014 this is the one voice he cannot argue away. He rushes off to free [[antigone|Antigone]] and bury [[polynices|Polynices]], doing at last, in a panic, what he should have done freely, and far too late.", ents:["tiresias", "creon", "miasma", "sight"], stage:"The prophet-scene is a Greek type-scene, and [[tiresias|Tiresias]] plays it as he did a generation earlier against [[oedipus|Oedipus]]: unwelcome truth, royal insult, then a curse that lands. Dramatically it is the <em>peripeteia</em>, the reversal on which the whole action swings. Its machinery is religious \u2014 failed sacrifice, the tearing of birds, omens read aloud, the gods made present without ever appearing.", turns:"The turn the whole tragedy pivots on \u2014 and its cruelty. [[creon|Creon]] finally bends, which means the gods, through [[tiresias|Tiresias]], have in effect ruled that [[antigone|Antigone]] was right all along. But the recognition comes a fraction too late to undo anything: the defining shape of Sophoclean tragedy, where the knowledge and the ruin arrive together." },
+  { k:"Fifth Stasimon", ode:true, g:"Choral ode", h:"Call to Dionysus", s:"In a surge of hope the [[chorus|chorus]] calls on [[dionysus|Dionysus]], the wine-god born of a [[thebes|Theban]] princess and the city's own protector, to come with his dancing fire and cleanse [[thebes|Thebes]] of its sickness. It is the kind of song that ought to turn a play toward rescue \u2014 the god summoned at the eleventh hour. But the prayer goes unanswered; even as the elders sing, the ruin [[creon|Creon]] set moving has already arrived.", ents:["chorus", "dionysus", "thebes"], stage:"This is a <em>hyporcheme</em>, a lively dance of hope \u2014 a Sophoclean signature dropped in with terrible timing just before catastrophe. The [[chorus|chorus]] summons [[dionysus|Dionysus]], and the irony runs deep: he is the god of theatre itself, invoked by performers in his own sacred precinct, at a festival held in his honour, and asked to save a city he will not save.", turns:"The cruelest irony in the play \u2014 a song of rescue raised at the very instant the blows are landing offstage. The hope is real to the [[chorus|chorus]] and already void to the audience. Everything the elders pray for, healing and the god's coming and the city made whole, is exactly what will not arrive." },
+  { k:"Exodos", ode:false, g:"The close \u00b7 final exit", h:"Too late", s:"A [[messenger|messenger]] brings the end in from offstage, as Greek tragedy always does. [[creon|Creon]] reached the [[tomb|tomb]] too late: [[antigone|Antigone]] had already taken her own life within it, and [[haemon|Haemon]], finding her, turned on his father and then upon himself, dying at her side.\n\nAs the messenger speaks, [[creon|Creon]]'s wife [[eurydice|Eurydice]] listens in silence and slips away; word soon follows that she too is gone, with a last curse on his name. [[creon|Creon]] returns carrying his son's body and is met with news of his wife's \u2014 the [[edict|edict]] meant to guard the city has emptied his own house instead. He begs only to be led out of sight. The [[chorus|chorus]] closes on the play's hard wisdom: the proud pay heavy blows for their pride, and the understanding, when it comes, comes too late to be worth anything.", ents:["messenger", "creon", "antigone", "haemon", "eurydice", "edict"], stage:"The deaths arrive by convention, through a [[messenger|messenger]]'s long narrative speech, the <em>rhesis</em>: Greek tragedy keeps its violence offstage and lets language make it worse than any staging could. The interior ruin may then have been wheeled into view on the <em>ekkyklema</em>, a rolling platform used to reveal what happened indoors. The [[chorus|chorus]] closes in a quiet marching rhythm, releasing the audience from the tension the Greeks called catharsis.", turns:"The catastrophe, and the bitter wisdom the play leaves us holding. Both houses are destroyed; [[creon|Creon]] survives only to understand, too late, what his [[edict|edict]] cost. The [[chorus|chorus]]'s last word is that the proud are schooled by suffering and that wisdom bought this way comes too late to spend \u2014 leaving open the question the play never closes: was [[antigone|Antigone]] right to die for it?" }
+];
+
+var ENTITIES = [
+
+{ id:"antigone", name:"Antigone", pron:"an-TIG-uh-nee", type:"character", tier:"major", themes:["law", "dead", "house"], essence:"The last daughter of a cursed house, who buries her brother against the city's edict and chooses a rock tomb over a life that would betray the dead.", sections:[
+      { h:"The Dust", body:"Two brothers have killed each other under the walls of Thebes. One, [[eteocles|Eteocles]], is buried with honor. The other, [[polynices|Polynices]], led an army against the city, and so [[creon|Creon]] has decreed that his body lie unburied on the plain \u2014 no grave, no rite, food for the dogs and birds, under pain of death.\n\nAntigone will not have it. In the grey before dawn she goes out to the body and does what the law of the gods requires: she covers it. Not a full grave \u2014 a scattering of dry earth, a handful of dust, the thin ritual minimum that lets a soul pass. It is enough to break the edict. When a [[sentry|sentry]] and his fellows sweep the dust away and lie in wait, she comes back and does it again, in the open, keening over the bared corpse. They take her without a struggle." },
+      { h:"Before the King", body:"Brought before [[creon|Creon]], she does not deny the deed \u2014 she claims it. His edict, she says, was a man's proclamation; it cannot overrule the [[unwritten_law|unwritten laws]] of the gods, which are not of today or yesterday and which no one knows the birth of. She owes her brother a grave, and she will pay it, whatever the city says.\n\nHer sister [[ismene|Ismene]], who refused to help, now tries to claim a share of the guilt and die beside her. Antigone will not allow it: the deed was hers alone, and she will not let a sister who chose life borrow her death." },
+      { h:"The Bride of Death", body:"Sentenced, she is led to a cave in the rock and sealed inside with a little food \u2014 so the city can say it did not, technically, kill her. On the way she sings her own lament: no wedding now, no children, only a stone chamber and a marriage to death.\n\nHer reasoning here is strange and famous. A husband could be replaced, she says, a child re-borne \u2014 but with both parents dead, no new brother can ever come. So this brother, and this duty, are beyond price. It is the coldest and most personal accounting in the play, and readers have argued over it for two thousand years." },
+      { h:"What She Chooses", body:"[[creon|Creon]] relents too late. When the tomb is opened, Antigone has already ended her own life inside it, on her own terms, unwilling to wait for the city's slow mercy. Her death pulls down [[haemon|Haemon]] after her, and [[eurydice|Eurydice]] after him. She never learns that she won \u2014 that the prophet, the son, the whole weight of the divine came round to her side. She is certain to the end, and the certainty is both her greatness and the thing that frightens us." },
+      { h:"Before the Play: Two Brothers, One War", body:"To understand the morning this play opens on, you need the night before it.\n\n[[oedipus|Oedipus]], king of [[thebes|Thebes]] and Antigone's father, discovered that he had unknowingly killed his own father and married his own mother. He blinded himself and went into exile, leaving two sons \u2014 [[eteocles|Eteocles]] and [[polynices|Polynices]] \u2014 to rule the city between them. They agreed to take the throne in alternate years.\n\n[[eteocles|Eteocles]] took his year and then refused to give it up. [[polynices|Polynices]], cheated, went to the city of Argos, married into its royal house, and came back with an army \u2014 [[seven|seven captains against the seven gates]] of his own home. The assault failed. But in the fighting the two brothers found each other, and each killed the other.\n\nThat is the night before. In the morning, their uncle [[creon|Creon]] is king, one brother is a hero and the other is carrion, and Antigone is standing in the half-dark outside the palace, telling her sister what she means to do." }
+    ], beneath:"<p>Antigone acts as <em>autonomos</em> \u2014 quite literally a law unto herself. That is her glory and the question mark over her. Is she the play's conscience, the one person who sees the [[unwritten_law|higher law]] plainly? Or is she a zealot, in love with death, as unbending in her way as [[creon|Creon]] is in his?</p><p>Hegel\u2019s (HAY-gul) famous reading refuses to pick: the tragedy is not right against wrong but <em>right against right</em> \u2014 the sacred claim of the family and the dead colliding with the legitimate claim of the city, each blind to the other. Both are partly justified; both are destroyed.</p><p>She is also a woman seizing action in a man's arena, and the play keeps noticing it. [[creon|Creon]] cannot bear to be beaten by a girl; the horror of her defiance, for him, is inseparable from her sex. Her strange calculus about the irreplaceable brother turns her love away from the living \u2014 from [[haemon|Haemon]], from [[ismene|Ismene]] \u2014 and toward the dead. Whether that is purity or a kind of coldness is left for the reader to weigh.</p><p>There is a harder question under the play, and it is the one that keeps it alive: does she have to die for this? [[creon|Creon]] is wrong \u2014 the play says so unmistakably \u2014 but Antigone does not merely oppose him. She courts the collision. She could bury her brother quietly; instead she goes back in daylight and wails over the corpse. She could accept [[ismene|Ismene]]'s help; instead she refuses it with contempt. She could plead; instead she taunts him. A conscience that insists on being seen is not quite the same thing as a conscience, and the play knows it.</p>", beyond:"<p>On stage she was played by a masked man, the corpse of [[polynices|Polynices]] never seen, her death reported rather than shown \u2014 Greek tragedy keeps its violence just offstage and lets language carry it. Scholars still argue over the play's one plot puzzle: the body is dusted twice, and no one is quite sure whether the first covering is meant to be Antigone's, the gods', or a deliberate ambiguity.</p><p>Ancient tradition holds that <em>Antigone</em> so pleased the Athenians that they elected Sophocles to a generalship soon after \u2014 a nice story, probably too tidy to be true.</p><p>Her afterlife is enormous. Jean Anouilh (an-WEE) staged an <em>Antigone</em> in occupied Paris in 1944 that both the Resistance and the collaborators thought was on their side. Ever since, she has been the standing image of the individual conscience against the state \u2014 conscripted by civil-rights marchers, dissidents, and dramatists on every continent. She is probably the most re-performed figure in Greek tragedy.</p>", rels:[
+      { id:"polynices", label:"the brother she buries" },
+      { id:"ismene", label:"the sister who will not, then would" },
+      { id:"creon", label:"the uncle-king who condemns her" },
+      { id:"haemon", label:"her betrothed, who dies for her" },
+      { id:"unwritten_law", label:"the higher law she serves" },
+      { id:"house_curse", label:"the doom she is born into" },
+      { id:"tomb", label:"where the city seals her" },
+      { id:"dust", label:"the rite she performs" },
+      { id:"philia", label:"the bond that drives her" },
+      { id:"oedipus", label:"her father, the curse's source" },
+      { id:"burial_rites", label:"the duty she performs" },
+      { id:"women_polis", label:"the limits she ignores" },
+      { id:"sophocles", label:"who wrote her" }
+    ] },
+
+{ id:"creon", name:"Creon", pron:"KREE-on", type:"character", tier:"major", themes:["law", "power"], essence:"Thebes' new ruler, who makes his own will the measure of the city \u2014 and learns, one grave too late, that a king can be right about order and catastrophically wrong.", sections:[
+      { h:"The New Ruler", body:"With both royal brothers dead, the crown falls to Creon, their uncle. His first act sets his whole course: the loyal defender [[eteocles|Eteocles]] gets a hero's grave; the invader [[polynices|Polynices]] is left to rot, and anyone who buries him dies. It sounds, at first, like firmness \u2014 a shaken city needs a steady hand." },
+      { h:"The Man Who Cannot Bend", body:"Then a girl breaks his [[edict|law]], and Creon cannot let it stand without seeming beaten \u2014 beaten by [[antigone|Antigone]], and by a woman. He waves off his son [[haemon|Haemon]], insults the prophet [[tiresias|Tiresias]], and declares the city his to command. His virtue, order, curdles into [[hubris|pride]] that will not turn." },
+      { h:"Too Late", body:"[[tiresias|Tiresias]] finally frightens him, and he runs to undo it all \u2014 too late. He comes back carrying his son's body, and word follows of his wife's. He asks only to be led out of sight. The man who would rule everything ends with nothing to rule." },
+      { h:"What He Loses", body:"He gets everything he asked for. The [[edict|edict]] is obeyed, the girl is condemned, the city is quiet, and his authority stands unchallenged. Then the prophet comes, and he breaks, and he runs to fix it \u2014 and every clock in the play has already run out.\n\nThey open the [[tomb|tomb]] and find [[antigone|Antigone]] dead, and [[haemon|Haemon]] holding her. His son looks at him, spits in his face, draws his sword on him, misses \u2014 and then turns the blade on himself and dies embracing her. [[creon|Creon]] carries the body home and is met at the door with the news that his wife has heard how [[haemon|Haemon]] died and killed herself, cursing him with her last breath.\n\nHe ends the play begging to be led away, calling himself nothing, a man who is no more than nobody. He wanted to be the city and he has become a warning." }
+    ], rels:[
+      { id:"antigone", label:"the niece he condemns" },
+      { id:"haemon", label:"the son he loses" },
+      { id:"eurydice", label:"the wife he loses" },
+      { id:"tiresias", label:"the prophet he defies, then obeys" },
+      { id:"unwritten_law", label:"the law he thinks he can overrule" },
+      { id:"edict", label:"the law he proclaims" },
+      { id:"hubris", label:"the pride that breaks him" },
+      { id:"chthonic", label:"the gods he forgets" },
+      { id:"women_polis", label:"why he cannot yield" }
+    ], beneath:"<p>Creon is the play's other absolutist, and its warning about power. He is not a monster when he begins \u2014 his principle, the city before the family, is a real and defensible one. His ruin is that he cannot bend, cannot hear, cannot imagine he is wrong. That is [[hubris|hubris]]: not mere arrogance but the overstepping of a mortal's bounds, here the living man presuming to govern the dead.</p><p>He and [[antigone|Antigone]] are terrible mirrors \u2014 two people so certain they are right that they destroy everything around them. Read that way, the tragedy is not hers alone. Some hold that Creon, on stage the largest part, is the play's true protagonist: the ruler whose self-knowledge arrives one grave too late to be worth anything.</p>", beyond:"<p>Creon carries more lines than anyone else in the play, which fuels an old argument over whose tragedy this is. Greek staging gave the role weight: the entrances through the palace doors, the shift from command to collapse, the final tableau of a man holding his dead.</p><p>In performance history he has become the standing face of the overreaching state \u2014 rigid authority against private conscience. Twentieth-century versions, staged under occupation and dictatorship, often tilt the sympathy his way or against him to argue their own politics, which is exactly why the play keeps being revived.</p><p>Watch how the numbers work in performance: [[creon|Creon]] has by far the largest part, he is on stage for most of the play, and he is the only person whose mind changes. By the shape of the drama \u2014 pride, warning, refusal, reversal, ruin \u2014 he is the tragic protagonist, and [[antigone|Antigone]], for all that the play bears her name, is offstage and dead well before the end. Whose tragedy this is has been argued since antiquity, and productions still choose sides by casting.</p>" },
+
+{ id:"haemon", name:"Haemon", pron:"HEE-mon", type:"character", tier:"major", themes:["power", "dead"], essence:"Creon's son and Antigone's betrothed, who argues for mercy as a son and, refused, follows her into the dark.", sections:[
+      { h:"The Son Who Reasons", body:"Haemon comes to his father not in revolt but in appeal. The city murmurs for [[antigone|Antigone]], he says; a wise ruler bends like a tree in the flood, and the tree that will not bend is torn up by the roots. It is the voice of reason and moderation \u2014 and [[creon|Creon]] hears only a boy unmanned by a woman." },
+      { h:"The Break", body:"Reason fails, and love has nowhere to go. Haemon leaves with a warning his father takes as a threat. When the tomb is opened he is already inside it, beside [[antigone|Antigone]]. He turns on his father, then upon himself. His death is the blow that finally breaks [[creon|Creon]] \u2014 too late to mean anything but grief." }
+    ], rels:[
+      { id:"antigone", label:"the bride he dies beside" },
+      { id:"creon", label:"the father he cannot move" },
+      { id:"eurydice", label:"his mother" },
+      { id:"eros", label:"the love that moves him" }
+    ], beneath:"<p>Haemon is the reasonable middle the play offers and then destroys. He argues for flexibility, for listening, for the wisdom of yielding \u2014 everything [[creon|Creon]] lacks. That the moderate voice dies with the extremists is part of the tragedy's cruelty: in a collision of absolutes, the one who counsels balance is crushed between them.</p><p>The chorus blames [[eros|love]] for his ruin \u2014 desire that overturns reason and loyalty alike. He is the point where the play's public argument becomes unbearably private: a son against a father, over a bride.</p>", beyond:"<p>The confrontation of Haemon and Creon is a set-piece of a form the Greeks loved: the <em>agon</em>, a formal debate in which two positions are argued to the hilt. Its rhythms \u2014 long speech answered by long speech, then quick line-for-line combat \u2014 are the engine of the scene.</p><p>His death, like every death here, happens offstage and reaches us through a messenger's narration. In reception Haemon stays in the shadow of the two leads, but productions that want the family tragedy rather than the political one often build around him.</p>" },
+
+{ id:"ismene", name:"Ismene", pron:"iss-MEE-nee", type:"character", tier:"major", themes:["dead", "house"], essence:"Antigone's sister, who chooses to live within the law \u2014 and then cannot bear to be left on the living side of it.", sections:[
+      { h:"The One Who Stays", body:"Ismene loves the dead as much as her sister does, but she is afraid, and she says so plainly: they are only two women, and one cannot fight the city. She will not break the [[edict|law]]. In the play's first scene she is the ordinary human measure against which [[antigone|Antigone]]'s extremity is set." },
+      { h:"Too Late to Share", body:"When [[antigone|Antigone]] is condemned, Ismene's nerve returns: she tries to claim a share of the deed and die beside her sister. [[antigone|Antigone]] refuses her \u2014 the death is hers alone. Ismene survives, and the play simply forgets her. She is never mentioned again, left alive in a house of the dead." },
+      { h:"After", body:"The play forgets her, and the silence is the point. Once [[antigone|Antigone]] refuses her a share of the death, Ismene is released \u2014 [[creon|Creon]] withdraws the charge \u2014 and she walks offstage and is never spoken of again.\n\nCount who is left standing at the end. [[antigone|Antigone]] is dead. [[haemon|Haemon]] is dead. [[eurydice|Eurydice]] is dead. [[creon|Creon]] is destroyed. And somewhere in that emptied palace is Ismene, the last of the house of [[oedipus|Oedipus]], alive, unpunished, and entirely alone \u2014 the sister who chose to live, in a house where living turns out to be the loneliest thing available." }
+    ], rels:[
+      { id:"antigone", label:"the sister she cannot save" },
+      { id:"polynices", label:"their unburied brother" },
+      { id:"house_curse", label:"the last two of the line" },
+      { id:"oedipus", label:"her father" },
+      { id:"women_polis", label:"whose limits she accepts" }
+    ], beneath:"<p>Ismene is the play's argument for the ordinary. Is she a coward, or the only sane person on stage? She accepts limits [[antigone|Antigone]] will not, and for that she lives \u2014 but into a silence the play offers no comfort for. Survival, here, is its own kind of ruin.</p><p>She measures her sister precisely: without Ismene's caution we could not feel the full strangeness of [[antigone|Antigone]]'s resolve. Modern readings, especially feminist ones, have worked to rescue her from the label of weakness \u2014 the sister who counts the cost is not obviously the lesser of the two.</p>", beyond:"<p>The opening scene \u2014 two sisters alone in the half-light before dawn \u2014 is one of the most quietly charged in Greek tragedy, and a production lives or dies on how it plays their difference. Is Ismene timid, prudent, terrified, or simply sane? The lines let a director choose. For centuries she was the overlooked sister; modern stagings, and feminist readings in particular, have reclaimed her as the voice of the survivor \u2014 the one left alive to stand in the ruin the heroes leave behind.</p>" },
+
+{ id:"tiresias", name:"Tiresias", pron:"ty-REE-see-us", type:"character", tier:"major", themes:["power", "law"], essence:"The blind prophet whose sightless reading of the gods' will is the one thing Creon cannot argue with.", sections:[
+      { h:"The Blind Seer", body:"Tiresias is the blind prophet of [[thebes|Thebes]] \u2014 sightless, yet the one man who sees the gods' will truly. He reads the future in the flight of birds and the burning of offerings. When he is led on stage by a boy, the play's long game of [[sight|blindness and sight]] comes to a head." },
+      { h:"The Warning", body:"His news is dreadful: the altars will not burn clean, the birds tear each other, the city is sick with [[miasma|pollution]] because a corpse lies unburied. He warns [[creon|Creon]] that a king who trades a living body for a dead one will pay with his own blood. It is the one voice [[creon|Creon]] cannot argue away \u2014 and it turns him, an instant too late." },
+      { h:"The Price of Being Right", body:"He does not enjoy this. He tells [[creon|Creon]] he has stood at his side and steered him well for years, and he has come now because the king is walking on the edge of a blade.\n\nThe signs are foul. At the altar the fat would not catch; the thigh-bones sat in their own dripping and smoked and spat, and the gall burst into the air, and the birds are tearing each other in the sky with a noise he has never heard. All of it, he says, because the dogs and birds have carried scraps of your unburied man to every hearth in the city \u2014 the altars are full of [[polynices|Polynices]], and no god will take an offering off them.\n\n[[creon|Creon]] calls him a fraud on the take. So the prophet stops being gentle, and prophesies: before the sun sets many times you will pay a corpse of your own blood for the corpse you have thrown out, and the [[chorus|elders]] will hear women wailing in your house. Then he lets his boy lead him away." }
+    ], rels:[
+      { id:"creon", label:"the king he warns" },
+      { id:"unwritten_law", label:"the divine order he reads" },
+      { id:"miasma", label:"the pollution he reads" },
+      { id:"sight", label:"blind, yet he sees" },
+      { id:"chthonic", label:"whose anger he reads" }
+    ], beneath:"<p>Tiresias is the gods' unarguable voice, and the hinge of the plot: everything before him is human quarrel, everything after is consequence. He embodies the play's central irony \u2014 the blind man sees, the sighted [[creon|Creon]] is blind \u2014 and behind him stands [[oedipus|Oedipus]], who saw the truth and then put out his own eyes.</p><p>That [[creon|Creon]] believes him when he believed no one else marks the limit of human power: a ruler may overrule his niece, his son, his people, but not the order of the gods and the dead that the prophet reads.</p>", beyond:"<p>Tiresias is the recurring seer of the whole Theban story \u2014 the same prophet who confronts [[oedipus|Oedipus]] a generation earlier. Greek myth gave him a strange biography: transformed for a time into a woman, blinded by a goddess and granted prophecy in exchange. His blindness-that-sees made him irresistible to later writers; he steps, centuries on, into the middle of Eliot's <em>The Waste Land</em> as the poem's seeing eye.</p>" },
+
+{ id:"chorus", name:"The Chorus of Theban Elders", type:"chorus", tier:"major", themes:["power", "house"], essence:"The old men of Thebes, who voice the city's relief, its unease, and its dawning horror \u2014 and who sing the play's great meditations on man and doom.", sections:[
+      { h:"The City's Voice", body:"The chorus is a band of old men of [[thebes|Thebes]], loyal to [[creon|Creon]] but never quite at ease. They sing and dance between the spoken scenes, the watching community given a voice. Their sympathy drifts as the play turns \u2014 and the audience's drifts with it." },
+      { h:"What They Sing", body:"Theirs are the play's great songs: the [[ode_to_man|Ode to Man]], a hymn to human power that is also a shudder at it; the song of the [[house_curse|doomed house]]; the ode to [[eros|love]] that unmakes fathers and sons; and the last hard lines, that wisdom comes to us broken and late." }
+    ], rels:[
+      { id:"ode_to_man", label:"their most famous song" },
+      { id:"creon", label:"the ruler they counsel" },
+      { id:"thebes", label:"the city they speak for" },
+      { id:"seven", label:"the war they survive" },
+      { id:"dionysus", label:"the god they invoke" },
+      { id:"greek_theatre", label:"the dancing-floor they filled" },
+      { id:"dionysia", label:"the festival they sang at" }
+    ], beneath:"<p>The chorus is the play's moral weather \u2014 cautious, proverbial, never heroic. It voices the wisdom of the ordinary citizen, which is real but limited: it sees the danger in [[creon|Creon]] and the danger in [[antigone|Antigone]], and dares to stop neither. Its odes do not simply decorate the action; they complicate it, pulling back to ask what any of this means for a city and a species.</p>", beyond:"<p>A Greek chorus was song and movement together, up to fifteen performers wheeling through a round dancing-floor, the <em>orchestra</em>, to music now entirely lost. Tragedy itself grew out of choral ritual, so the chorus is the oldest thing in the form. It is also the hardest to stage today: modern productions speak it, split it, cut it, or reinvent it, because nothing in our theatre quite corresponds to a city singing at itself.</p><p>Their closing lines are among the most quoted in Greek: that good sense is the first condition of happiness, that no man should be irreverent toward the gods, that great words from proud men are paid for with great blows \u2014 and that this is how the old learn wisdom, late. It is an ending that offers no comfort at all, only an account of the bill.</p>" },
+
+{ id:"eurydice", name:"Eurydice", pron:"yoo-RID-ih-see", type:"character", tier:"supporting", themes:["dead", "house"], essence:"Creon's wife, who hears how her son died, says almost nothing, and goes inside to end her grief in silence.", rels:[
+      { id:"creon", label:"the husband her death indicts" },
+      { id:"haemon", label:"the son she follows" },
+      { id:"women_polis", label:"the silent queen" }
+    ], sections:[
+      { h:"The Silent Queen", body:"Creon's wife appears only once, near the end. She hears the messenger tell how her son [[haemon|Haemon]] died, asks almost nothing, and goes back inside without a word. That silence is the most famous in Greek drama \u2014 and the last thing it holds is her own grief, carried out of sight." },
+      { h:"The Doors Close", body:"She comes out because she heard something through the door on her way to pray. So she stands and listens while a messenger describes how her son died \u2014 how they found [[antigone|Antigone]] hanged in the [[tomb|tomb]], and [[haemon|Haemon]] with his arms around her waist, and how the boy looked at his father and drew on him and then fell on his own sword.\n\nShe says almost nothing. She turns and goes into the house.\n\nThe [[chorus|elders]] tell themselves that too much silence is as bad as too much crying, and try to believe she has only gone in to grieve privately. A moment later the messenger comes back out. She has killed herself at the altar, and with her last breath she named her husband \u2014 called him the killer of his sons \u2014 and shut her eyes." }
+    ], beneath:"<p>Eurydice is the person the tragedy almost forgets, and the play knows it. Her few lines and wordless exit are the final, quiet indictment of [[creon|Creon]]: the public catastrophe, totted up in bodies, comes home as one mother's silence. She is the domestic cost made visible for a moment and then gone \u2014 absence weighing more than any speech could.</p>" },
+
+{ id:"sentry", name:"The Sentry", type:"character", tier:"supporting", themes:["power"], essence:"A small, frightened guard caught between a buried corpse and a furious king \u2014 the play's one breath of nervous, ground-level comedy.", rels:[
+      { id:"creon", label:"the king he dreads reporting to" },
+      { id:"antigone", label:"the culprit he must produce" }
+    ], sections:[
+      { h:"The Man in the Middle", body:"The sentry is a small, frightened guard caught between a dusted corpse and a furious king. He stalls, he bargains with himself on the way, he is weak with relief when suspicion lifts off him \u2014 and then, half-apologetic, he drags [[antigone|Antigone]] back. He is the one ordinary man in a play of absolutists." }
+    ], beyond:"<p>Sophocles hands the sentry a low, colloquial, almost comic voice \u2014 a deliberate breath of ordinary human self-interest before the tragedy tightens its grip. He is a version of a type the Greeks knew well: the messenger who would really rather not deliver the news. His plain wish to save his own skin throws the heroes' terrible certainty into sharp relief.</p>" },
+
+{ id:"messenger", name:"The Messenger", type:"character", tier:"supporting", themes:["dead"], essence:"The voice that carries the ending in from offstage \u2014 the deaths the audience is never shown.", rels:[
+      { id:"creon", label:"whose ruin he reports" },
+      { id:"eurydice", label:"who overhears him" },
+      { id:"greek_theatre", label:"the convention he embodies" }
+    ], sections:[
+      { h:"The Voice from Offstage", body:"The end of the play arrives in a messenger's mouth. Greek tragedy keeps its deaths out of sight and sends someone to narrate them, and so it is here: he carries the news in from the tomb and the palace, speaking the catastrophe to [[eurydice|Eurydice]] and the chorus while the city holds still to listen." }
+    ], beyond:"<p>The messenger is a convention with real power. Keeping violence offstage suited Greek decorum, the fixed masks, and a small cast \u2014 but it also discovered that horror described can strike harder than horror shown. The long messenger-speech became a set-piece of the form, a burst of vivid narrative where the stage itself falls quiet.</p>" },
+
+{ id:"polynices", name:"Polynices", pron:"pol-ih-NY-seez", type:"character", tier:"supporting", themes:["dead", "house"], essence:"The brother who marched on his own city and fell at its gates \u2014 now a corpse forbidden a grave, and the pivot the whole play turns on.", rels:[
+      { id:"antigone", label:"the sister who buries him" },
+      { id:"eteocles", label:"the brother who killed him and was killed" },
+      { id:"creon", label:"who denies him a grave" },
+      { id:"seven", label:"the army he led" },
+      { id:"burial_rites", label:"denied him" }
+    ], sections:[
+      { h:"The Brother at the Gates", body:"Exiled from [[thebes|Thebes]] by his brother [[eteocles|Eteocles]], Polynices raised an army and came back to take his share of the throne by force, one of [[seven|the seven captains]] who stormed the city's gates. The brothers met in the fighting and killed each other. Now his body lies on the plain, unburied by [[creon|Creon]]'s order \u2014 the still point the whole play turns on." }
+    ], beneath:"<p>The play never settles whether Polynices deserves his fate. He did march on his own city; he was also cheated of his turn at the crown. He never speaks and never acts \u2014 he is a corpse, pure object of the quarrel \u2014 and yet everything turns on him. Through him the play asks its coldest question: what, if anything, does a city owe the body of its enemy?</p>" },
+
+{ id:"tomb", name:"The Rock Tomb", type:"place", tier:"supporting", themes:["dead", "law"], essence:"A cave sealed with stone, where the city walls Antigone up alive so it can tell itself it did not kill her.", rels:[
+      { id:"antigone", label:"whom it encloses" },
+      { id:"creon", label:"who orders it sealed" },
+      { id:"chthonic", label:"whose ground it is" }
+    ], sections:[
+      { h:"The Bridal Cave", body:"[[antigone|Antigone]] is walled into a chamber cut in rock, sealed with stone, left with a little food. The evasion is deliberate: if the city does not strike the blow, it can tell itself it has not killed her. She goes to it singing of a wedding \u2014 not to a husband but to death, the cave her bridal room." }
+    ], beneath:"<p>The tomb is the play's central symbol, the place where all its oppositions meet and collapse. It is between living and dead (she enters alive), between marriage and death (the bride of stone), between city and underworld. Sealing her there, [[creon|Creon]] means to keep his hands clean; instead he opens the door on his own ruin.</p>" },
+
+{ id:"unwritten_law", name:"The Unwritten Laws", type:"concept", tier:"supporting", themes:["law", "dead"], essence:"The older order of the gods and the dead \u2014 not of today or yesterday, with no known birth \u2014 that Antigone sets above any edict of the city.", rels:[
+      { id:"antigone", label:"who obeys them" },
+      { id:"creon", label:"who thinks he can overrule them" },
+      { id:"tiresias", label:"who reads them in the altars" },
+      { id:"chthonic", label:"whose laws they are" },
+      { id:"burial_rites", label:"what they require" }
+    ], sections:[
+      { h:"Older Than Any Edict", body:"Challenged by [[creon|Creon]], [[antigone|Antigone]] answers with the play's most famous claim: his proclamation is a man's, but there are laws not of today or yesterday, of no known birth \u2014 the laws of the gods below and the due owed the dead. No mortal edict can override them, and she will not be judged by the gods for fearing a king." }
+    ], beneath:"<p>This is the founding text of an argument that never ends: is there a law above the law of the state? The Greeks called it the unwritten law; later ages called it natural law and set it against positive law, the mere command of whoever holds power. From Aquinas to the civil-rights claim that an unjust law is no law at all, Antigone's speech stands behind every appeal to a justice higher than the statute. The play does not tell us she is simply right \u2014 but it makes the question unavoidable.</p>" },
+
+{ id:"ode_to_man", name:"The Ode to Man", type:"concept", tier:"supporting", themes:["power", "law"], essence:"The chorus's great song \u2014 many things are formidable, none more than man, who masters all the earth yet never death, and turns as easily to ruin as to good.", rels:[
+      { id:"chorus", label:"who sing it" },
+      { id:"creon", label:"whose overreach it foreshadows" }
+    ], sections:[
+      { h:"Many Wonders, None Like Man", body:"The chorus's first great song surveys what man can do: he crosses the grey sea, wears down the earth, snares the beasts, teaches himself speech and law and the building of cities. He masters everything \u2014 everything but death. And the same restless power, the song warns, bends as easily toward ruin as toward good." }
+    ], beneath:"<p>The ode turns on a single untranslatable word, <em>deinos</em>: wondrous and terrible at once. It is a hymn to human achievement that is also a shudder at it, and it hangs over the whole play \u2014 over [[creon|Creon]]'s overreach and [[antigone|Antigone]]'s alike. It is among the most quoted passages in Greek literature; the philosopher Heidegger built a famous reading of the human condition on its double edge. Wonder, or warning? The ode refuses to choose.</p>" },
+
+{ id:"house_curse", name:"The Curse of the House", type:"concept", tier:"supporting", themes:["house", "dead"], essence:"The inherited doom of the line of Labdacus (LAB-duh-kus), running down through Oedipus (ED-ih-pus) to his children, and spending itself here on the last of them.", rels:[
+      { id:"antigone", label:"its final heir" },
+      { id:"ismene", label:"the other last child" },
+      { id:"polynices", label:"struck down at the gates" },
+      { id:"oedipus", label:"who embodies it" },
+      { id:"jocasta", label:"the mother it claims" }
+    ], sections:[
+      { h:"The Doom of the Labdacids", body:"The curse runs in the blood of the royal house. It begins with an ancestor's crime, passes to [[oedipus|Oedipus]] \u2014 who killed his father, the old king Laius (LY-us), and married his mother \u2014 and comes down through his warring sons to his daughters [[antigone|Antigone]] and [[ismene|Ismene]], the last of the line. The chorus sings of it as a black swell running down the generations." }
+    ], beneath:"<p>The curse raises the great Greek question of fate against character. Is the house doomed from outside, or do its people keep choosing the same ruin? The play leans toward the harder answer: the curse works less like destiny than like an inherited temperament \u2014 a family strain of absolute, unbending will, handed down and spending itself at last in [[antigone|Antigone]], its final and most willing heir.</p>" },
+
+{ id:"eteocles", name:"Eteocles", pron:"ee-TEE-oh-kleez", type:"character", tier:"minor", themes:["house", "power"], essence:"The brother who held Thebes and died defending it \u2014 buried with full honor, the mirror of the brother left to rot.", rels:[
+      { id:"polynices", label:"his brother and killer" },
+      { id:"seven", label:"the assault he repelled" }
+    ] },
+
+{ id:"thebes", name:"Thebes", pron:"THEEBZ", type:"place", tier:"minor", themes:["power"], essence:"The city just saved from its attackers, whose peace and whose gods are the ground the whole conflict is fought over.", rels:[
+      { id:"creon", label:"its new ruler" },
+      { id:"chorus", label:"its elders" }
+    ] },
+
+{ id:"oedipus", name:"Oedipus", type:"character", tier:"supporting", pron:"ED-ih-pus", themes:["house", "dead"], essence:"Antigone's father, the king who solved the Sphinx's riddle and then learned he had unknowingly killed his father and married his mother \u2014 the wound at the root of the family's curse.", sections:[
+      { h:"The King Who Saw Too Late", body:"Oedipus answered the riddle that was strangling [[thebes|Thebes]], and the grateful city made him king. Only later, searching for the cause of a plague, did he uncover the truth: the king he had killed on the road was his father, and the queen he had married, Jocasta (joh-KAS-tuh), was his mother. He blinded himself and went into exile, and died before this play begins \u2014 but the ruin he set loose has not." }
+    ], beneath:"<p>Oedipus sets the pattern his daughter inherits: the relentless will that cannot stop short of the truth, even the truth that destroys it. He and [[antigone|Antigone]] are alike in temperament as much as blood \u2014 both would rather be broken than bend. His self-blinding hangs behind the whole play of [[sight|sight and blindness]]: the man who saw the answer to everything, and could not see what he had done.</p>", rels:[
+      { id:"antigone", label:"his daughter" },
+      { id:"jocasta", label:"his wife, and his mother" },
+      { id:"house_curse", label:"the doom he embodies" },
+      { id:"sight", label:"who blinded himself" }
+    ] },
+
+{ id:"jocasta", name:"Jocasta", type:"character", tier:"minor", pron:"joh-KAS-tuh", themes:["house", "dead"], essence:"Oedipus's wife and, unknown to them both, his mother; the queen whose ruin precedes the play and seeds the curse on her children.", sections:[
+      { h:"The Queen Before the Play", body:"Jocasta was queen of [[thebes|Thebes]], wife of the old king and then of [[oedipus|Oedipus]] \u2014 who was, though neither knew it, her son. She is mother to [[antigone|Antigone]], [[ismene|Ismene]], and the two brothers whose quarrel opens the play, and sister to [[creon|Creon]]. When the truth came to light she took her own life. All of this is done before Antigone begins; it is the ground the play stands on." }
+    ], rels:[
+      { id:"oedipus", label:"her husband and son" },
+      { id:"antigone", label:"her daughter" },
+      { id:"creon", label:"her brother" }
+    ] },
+
+{ id:"hubris", name:"Hubris", type:"concept", tier:"supporting", pron:"HYOO-bris", themes:["law", "power"], essence:"The overreaching pride that oversteps the bounds set for mortals and invites the gods' correction \u2014 the flaw that hardens Creon past the point of return.", sections:[
+      { h:"Overstepping", body:"To the Greeks, hubris was not simple arrogance but a violent overstepping \u2014 a mortal grasping at what is not his to hold. [[creon|Creon]] commits it by presuming to rule the dead, denying a corpse the earth the gods require. The [[ode_to_man|Ode to Man]] has already warned where such power leads; the gods answer in their own time." }
+    ], beneath:"<p>Hubris drives the classic shape of tragedy: the fall that is at once deserved and pitiable. It is worth asking whether [[antigone|Antigone]] is guilty of it too \u2014 her certainty is as total as [[creon|Creon]]'s. The word has long since escaped the theatre into everyday speech, but in the play it keeps its full weight: the specific pride that the order of things exists to break.</p>", rels:[
+      { id:"creon", label:"whom it destroys" },
+      { id:"unwritten_law", label:"the bound he oversteps" },
+      { id:"ode_to_man", label:"which foreshadows it" }
+    ] },
+
+{ id:"philia", name:"Philia", type:"concept", tier:"supporting", pron:"FIL-ee-uh", themes:["dead", "house"], essence:"The binding love owed to kin \u2014 the claim of blood and of the dead that moves Antigone against the city.", sections:[
+      { h:"The Claim of Blood", body:"Philia is the Greek bond of family love and loyalty, and it carries duties: to bury a brother is not a choice but a sacred obligation owed the dead. [[antigone|Antigone]] acts out of philia, and it sets her squarely against the rival claim of the [[polis_oikos|city]]. Her love runs toward her own blood \u2014 and, notoriously, toward the dead over the living." }
+    ], beneath:"<p>The tragedy is a collision of loyalties, and philia is one whole side of it: the family and its dead against the state and its law. It also exposes the strangeness in [[antigone|Antigone]]: she ranks a brother above any husband or child she might have had, love narrowed to a point and fixed on a grave. Whether that is devotion or a kind of coldness is the question the play leaves open.</p>", rels:[
+      { id:"antigone", label:"who is moved by it" },
+      { id:"polynices", label:"the brother it is owed" },
+      { id:"polis_oikos", label:"the claim it collides with" }
+    ] },
+
+{ id:"miasma", name:"Miasma", type:"concept", tier:"supporting", pron:"my-AZ-muh", themes:["law", "dead"], essence:"Ritual pollution \u2014 the contagion of an unburied corpse or unpunished crime that spreads until the gods are appeased; the poison Tiresias smells over Thebes.", sections:[
+      { h:"The Corpse That Poisons the City", body:"The Greeks believed a body denied burial did not merely offend \u2014 it polluted, sickening the whole community until things were set right. [[tiresias|Tiresias]] reads the signs: the altars refuse their offerings, the birds foul themselves. [[creon|Creon]]'s [[edict|edict]] has made all of [[thebes|Thebes]] unclean, and the city will pay until the dead are given their due." }
+    ], beneath:"<p>Miasma is the play's proof that the [[unwritten_law|unwritten laws]] are no mere sentiment: break them and the physical world itself curdles. The same idea drives the plague in [[oedipus|Oedipus]]'s story. Pollution is how Greek religion enforced order \u2014 a contagion that binds a whole people to the acts of its rulers, whether they consented or not.</p>", rels:[
+      { id:"tiresias", label:"who detects it" },
+      { id:"unwritten_law", label:"which it enforces" },
+      { id:"polynices", label:"whose corpse spreads it" }
+    ] },
+
+{ id:"polis_oikos", name:"The City and the Household", type:"concept", tier:"supporting", themes:["power", "dead"], essence:"The two orders the play sets at war \u2014 the polis, the public city of law, against the oikos, the private household and its dead.", sections:[
+      { h:"Two Loyalties", body:"The polis (POL-iss) is the citizen's public world \u2014 law, the common good, the city's survival \u2014 and it is [[creon|Creon]]'s ground. The oikos (OY-kos) is the household \u2014 blood, the family gods, the dead \u2014 and it is [[antigone|Antigone]]'s. The tragedy is that both have a genuine claim, and no one on stage can honor both at once." }
+    ], beneath:"<p>Hegel's famous reading of the play lives here: not right against wrong, but two goods that cannot be reconciled, each blind to the justice of the other. The division is also gendered \u2014 the city is the men's sphere, the household the women's \u2014 which is part of what makes [[antigone|Antigone]]'s public defiance so intolerable to [[creon|Creon]]. She has crossed a line drawn around her sex as much as around the grave.</p>", rels:[
+      { id:"creon", label:"who stands for the city" },
+      { id:"antigone", label:"who stands for the household" },
+      { id:"philia", label:"the family bond it weighs" }
+    ] },
+
+{ id:"sight", name:"Blindness and Sight", type:"concept", tier:"supporting", themes:["power", "law"], essence:"The play's recurring irony \u2014 the blind see truly and the sighted are blind \u2014 that binds Tiresias, Creon, and the ghost of Oedipus.", sections:[
+      { h:"Who Truly Sees", body:"[[tiresias|Tiresias]] is blind and reads the gods plainly; [[creon|Creon]] has his eyes and cannot see reason or ruin until both are on top of him; and behind them stands [[oedipus|Oedipus]], who uncovered the truth and then put out his own eyes. Insight and eyesight, the play keeps insisting, are not the same thing." }
+    ], beneath:"<p>Blindness and sight are the master-metaphor of the whole Theban story, and Antigone plays its own variation: knowledge that arrives only when it is useless. The gods' truth is visible here to the one man who cannot see the world, and invisible to the ruler who thinks he sees everything. Wisdom, the chorus says at the last, comes to us late \u2014 and by then the seeing costs too much.</p>", rels:[
+      { id:"tiresias", label:"blind, yet he sees" },
+      { id:"creon", label:"sighted, yet blind" },
+      { id:"oedipus", label:"who blinded himself" }
+    ] },
+
+{ id:"edict", name:"Creon's Edict", type:"object", tier:"supporting", themes:["law", "power"], essence:"The proclamation forbidding Polynices' burial on pain of death \u2014 the single command the whole tragedy turns on.", sections:[
+      { h:"The Word of the King", body:"[[creon|Creon]]'s first act as ruler is a law: honor [[eteocles|Eteocles]] with burial, leave [[polynices|Polynices]] to rot, and put to death anyone who defies it. Sound statecraft for a city just saved from a traitor \u2014 or a fatal overreach into the realm of the gods and the dead. Everything that follows is the edict working itself out." }
+    ], beneath:"<p>The edict is the collision made concrete: positive law, the naked command of whoever holds power, set against the [[unwritten_law|divine law]] it presumes to override. It is also a study in how a single proclamation, issued in the name of order, can annihilate two whole families. The tragedy asks not whether rulers may make law, but what happens when one mistakes his own will for justice.</p>", rels:[
+      { id:"creon", label:"who proclaims it" },
+      { id:"polynices", label:"whom it condemns" },
+      { id:"antigone", label:"who breaks it" },
+      { id:"unwritten_law", label:"the law it defies" }
+    ] },
+
+{ id:"dust", name:"The Handful of Dust", type:"object", tier:"supporting", themes:["dead", "law"], essence:"The thin scattering of dry earth Antigone throws over her brother \u2014 not a grave but a symbolic rite, and enough to break the edict.", sections:[
+      { h:"Enough to Bury Him", body:"A full grave is impossible; a handful of dust is not. The scattering of dry earth is the ritual minimum that lets a soul pass, and [[antigone|Antigone]] performs it over [[polynices|Polynices]]. The guards sweep it away; she comes back in daylight and does it again. The smallest gesture in the play carries its largest defiance." }
+    ], beneath:"<p>Dust is the play's central image and its emblem of proportion overturned: the frail, almost-nothing that outweighs a king's whole power. The gap between the ritual sprinkle and an actual burial is the plot's one puzzle \u2014 the body is covered twice, and scholars still argue whose hand did the first covering. Either way, it is earth quietly reclaiming its own, against every order to the contrary.</p>", rels:[
+      { id:"antigone", label:"who scatters it" },
+      { id:"polynices", label:"whom it covers" },
+      { id:"edict", label:"which it breaks" },
+      { id:"burial_rites", label:"the rite it completes" }
+    ] },
+
+{ id:"eros", name:"Eros", type:"concept", tier:"minor", pron:"AIR-ohs", themes:["house"], essence:"The god of desire, unconquered in battle \u2014 the force the chorus blames for turning Haemon against his own father.", sections:[
+      { h:"Love's Ruin", body:"In its third great song the chorus turns on love itself: [[eros|Eros]], a power that maddens the steadiest heart and topples the strong. Here it is the force that drives [[haemon|Haemon]] to defy [[creon|Creon]] and die beside [[antigone|Antigone]] \u2014 love as a tragic undoing, not a tenderness." }
+    ], rels:[
+      { id:"haemon", label:"whom it moves" },
+      { id:"antigone", label:"the bride he dies for" }
+    ] },
+
+{ id:"dionysus", name:"Dionysus", type:"character", tier:"minor", pron:"dy-uh-NY-sus", themes:["power"], essence:"The wine-god born of Thebes, whom the chorus calls on to come dancing and heal the stricken city \u2014 a hope that arrives too late.", sections:[
+      { h:"Thebes' Own God", body:"[[dionysus|Dionysus]] was born of a [[thebes|Theban]] princess, and the city claims him as its own. In its last hopeful song the chorus begs him to come with his dancing fire and cleanse the sickness from the city. The catastrophe is already in motion; the god does not come in time." }
+    ], rels:[
+      { id:"thebes", label:"his birthplace" },
+      { id:"chorus", label:"who invoke him" }
+    ] },
+
+{ id:"seven", name:"The Seven Against Thebes", type:"concept", tier:"minor", themes:["house", "power"], essence:"The seven war-captains, led by the exiled Polynices, who stormed the city's seven gates \u2014 the war that ends just as the play begins.", sections:[
+      { h:"The War at the Gates", body:"Cheated of his turn at the throne, [[polynices|Polynices]] raised an army in the city of Argos (AR-gos) and marched on his own home: seven champions against the seven gates of [[thebes|Thebes]]. The assault failed, but [[polynices|Polynices]] and [[eteocles|Eteocles]] found each other in the fighting and fell by each other's hands. [[creon|Creon]] takes the throne over that wreckage, and the play opens the morning after." }
+    ], rels:[
+      { id:"polynices", label:"who led it" },
+      { id:"eteocles", label:"who held the city" },
+      { id:"thebes", label:"the city besieged" }
+    ] },
+
+{ id:"sophocles", name:"Sophocles", type:"concept", tier:"supporting", pron:"SOF-uh-kleez", themes:["power"], essence:"The Athenian playwright who wrote this \u2014 a public man of a public city, who spent sixty years turning myth into the sharpest moral machinery in the world.", sections:[
+      { h:"The Man", body:"Sophocles lived roughly ninety years, through the whole golden age of Athens and into the ruinous war that ended it. He was not a recluse: he served as a treasurer of the empire, was elected general, and held a priesthood. He wrote well over a hundred plays and won first prize more often than anyone; seven complete tragedies survive.\n\n<em>Antigone</em> is early \u2014 around 441 BCE \u2014 and it is, in myth-time, the <em>last</em> of his three Theban plays. He wrote them decades apart, for different competitions, and never as a trilogy. Reading them as one continuous story is something later ages did to him." },
+      { h:"What He Changed", body:"His innovations sound small and were enormous. He added a third speaking actor \u2014 which is why three people can be on stage at once, why [[creon|Creon]] can be squeezed between [[haemon|Haemon]] and the [[chorus|chorus]], why a scene can have a witness. He enlarged the chorus and, crucially, shrank its share of the play, pushing the weight onto human beings arguing with each other.\n\nAnd he abandoned the linked trilogy that [[aeschylus_note|Aeschylus]] used, writing each tragedy as a self-contained thing. That decision is why <em>Antigone</em> feels the way it does: a single day, a single collision, no larger frame to console you." }
+    ], beyond:"<p>An old story holds that the Athenians were so taken with <em>Antigone</em> that they elected him general on the strength of it \u2014 too tidy to be true, but it tells you that the play landed as a public event, not a literary one. He is said to have been prosecuted in extreme old age by his own son, who claimed he was senile and unfit to manage the family property; Sophocles, the story goes, read the jury a passage from the play he was then writing and was acquitted on the spot.</p>", rels:[
+      { id:"dionysia", label:"where his plays were staged" },
+      { id:"greek_theatre", label:"the form he reshaped" },
+      { id:"antigone", label:"his creation" },
+      { id:"aeschylus_note", label:"the elder he displaced" }
+    ] },
+
+{ id:"dionysia", name:"The City Dionysia", type:"concept", tier:"supporting", pron:"dy-uh-NISH-ee-uh", themes:["power"], essence:"The Athenian festival where this play was first performed \u2014 a state occasion, a religious rite, and a competition, in front of most of the city at once.", sections:[
+      { h:"A Festival, Not a Night Out", body:"Greek tragedy was not entertainment you bought a ticket for on a whim. It happened once a year, in early spring, at a festival in honour of Dionysus \u2014 several days of processions, sacrifices, and drinking, with the plays at the centre.\n\nThe audience was enormous, perhaps fourteen thousand or more, seated on a hillside in the open air, in daylight. They came at dawn and stayed all day. Playwrights competed: three of them, each staging three tragedies plus a bawdy satyr-play, judged by a panel, with a prize at the end. Your play was one entry in a contest, watched by the entire city, and the city decided." },
+      { h:"Why That Matters Here", body:"It means <em>Antigone</em> was not a private meditation. It was addressed to several thousand citizens sitting together \u2014 the same men who voted in the assembly, sat on juries, and buried their own dead \u2014 and it asked them, out loud, in public, whether the city's law can override what the gods require.\n\nAnd it was staged with the state's business woven around it: before the plays, the tribute from the empire was displayed in the theatre, and the war-orphans of Athens, raised at public expense, paraded in armour. Then the audience settled down to watch a play about a girl the state destroys for burying her brother. Nothing about that juxtaposition is accidental." }
+    ], beneath:"<p>The festival explains the strange civic seriousness of these plays. A tragedy was a thing the city did to itself, in the open, once a year: it took its own founding assumptions \u2014 about law, family, the gods, power \u2014 and staged them breaking. That an audience of citizens would sit for that, and then vote a prize to whoever did it best, is one of the more remarkable facts in the history of politics.</p>", rels:[
+      { id:"greek_theatre", label:"where it happened" },
+      { id:"sophocles", label:"who competed there" },
+      { id:"chorus", label:"funded by a wealthy citizen" }
+    ] },
+
+{ id:"greek_theatre", name:"The Greek Theatre", type:"concept", tier:"supporting", themes:["power"], essence:"Masks, daylight, a round dancing-floor, three actors and a singing chorus \u2014 and no violence ever shown. Knowing the machine makes the play louder.", sections:[
+      { h:"The Space and the Rules", body:"Picture it: an open hillside, full daylight, no scenery to speak of. At the centre a round dancing-floor \u2014 the <em>orchestra</em> \u2014 where the [[chorus|chorus]] sing and move. Behind it a wooden building, the <em>skene</em>, whose door is the palace door; everything inside it is out of sight.\n\nAll the parts are played by three men. They wear masks \u2014 painted, mouth open, covering the whole head \u2014 so one actor plays several roles, and every part, including [[antigone|Antigone]] and [[ismene|Ismene]] and [[eurydice|Eurydice]], is played by a man. There is no close-up, no facial flicker, no whisper. Everything must be carried by voice, by gesture, and by words." },
+      { h:"What You Never See", body:"The violence happens offstage, always. [[antigone|Antigone]] hangs in a cave you cannot see; [[haemon|Haemon]] falls on his sword in the same cave; [[eurydice|Eurydice]] dies behind the palace door. Someone comes out and tells you.\n\nThis is not squeamishness \u2014 it is a discovery. A death described by a shaken witness, in front of a crowd holding its breath, lands harder than a death staged. Greek tragedy found that out and built its whole method on it, which is why the messenger-speech is one of the great set-pieces of the form. When the doors finally do open, and a rolling platform wheels the bodies into the light, the effect is devastating precisely because everything up to that point has been words." }
+    ], beyond:"<p>Almost everything we would most want is gone. The music is lost \u2014 every choral ode was sung to a double-pipe and danced, and we have the words only, like a libretto with the score burned. The choreography is lost. The masks are lost. What survives is the text, which is roughly a third of what an Athenian saw and heard. Every modern production is a reconstruction of a ghost.</p>", rels:[
+      { id:"chorus", label:"who filled the dancing-floor" },
+      { id:"dionysia", label:"the festival it served" },
+      { id:"messenger", label:"who reports what you cannot see" },
+      { id:"sophocles", label:"who added the third actor" }
+    ] },
+
+{ id:"burial_rites", name:"Greek Burial Rites", type:"concept", tier:"supporting", themes:["dead", "law"], essence:"What Antigone is actually fighting for \u2014 and why a handful of dust, to a Greek, is not a gesture but the difference between rest and a homeless soul.", sections:[
+      { h:"What the Dead Are Owed", body:"To a Greek, burial was not sentiment. It was an obligation to the gods below, owed by the family \u2014 and it was, specifically, women's work: to wash the body, dress it, mourn it aloud, and see it into the earth.\n\nWithout it the dead had no rest. The soul was believed to wander, unable to cross into the underworld, homeless at the border. The corpse itself became a source of [[unwritten_law|pollution]] \u2014 not a metaphor but a contagion, souring the altars and the city that allowed it. This is why a scattering of dry [[dust|dust]] is enough: the rite, not the grave, is what matters. Cover him, say the words, and the soul can go." },
+      { h:"Why the Edict Is Monstrous", body:"[[creon|Creon]] is not merely being harsh. By forbidding burial he is doing something a Greek audience would have felt as a violation of the natural order: he is claiming jurisdiction over the dead, who belong to the gods below, and holding a soul at the border to punish a body that can no longer be punished.\n\nWorse, he leaves [[polynices|Polynices]] where the dogs and birds can get at him \u2014 and carrion birds carry scraps to every altar in [[thebes|Thebes]]. That is exactly what [[tiresias|Tiresias]] eventually reports. The [[edict|edict]] does not just offend the gods; it physically infects the city with the crime." }
+    ], beneath:"<p>Understand this and the whole play reorganizes itself. [[antigone|Antigone]] is not making a romantic gesture of defiance \u2014 she is performing a sacred duty that falls to her, as a woman of the family, and that no state has the standing to cancel. And the [[unwritten_law|unwritten law]] she cites is not an abstraction she invented: it is the oldest and most concrete obligation her world knew. She is, in the plainest sense, doing her job.</p>", rels:[
+      { id:"antigone", label:"who performs them" },
+      { id:"dust", label:"the minimum rite" },
+      { id:"polynices", label:"denied them" },
+      { id:"unwritten_law", label:"which requires them" },
+      { id:"edict", label:"which forbids them" }
+    ] },
+
+{ id:"chthonic", name:"The Gods Below", type:"concept", tier:"supporting", pron:"THON-ik", themes:["dead", "law"], essence:"Hades and the powers of the earth, who own the dead and are owed them \u2014 the older, colder half of Greek religion, and the half Creon forgets.", sections:[
+      { h:"Two Kinds of God", body:"The Greeks worshipped upward and downward. Above were the bright Olympians \u2014 Zeus, Athena, [[dionysus|Dionysus]] \u2014 who governed the living, the city, the weather, the war. Below were the chthonic powers: Hades, Persephone, the dark gods of the earth, and the dead themselves. Their rites were different, their altars were different, and their claims were absolute.\n\nThe dead belong to them. A body owed to the earth and withheld from it is a debt to the gods below, and they are not gods who forget." },
+      { h:"Creon's Mistake", body:"[[creon|Creon]] rules the living, and he is good at it. What he cannot grasp is that his authority stops at the edge of the grave.\n\n[[antigone|Antigone]] says it to his face and he does not hear it: the gods below did not make this law of yours. [[tiresias|Tiresias]] finally makes it unmistakable \u2014 you have kept a body from the gods below and you have shut a living woman in a tomb that belongs to them. You have put the upper world in the lower and the lower in the upper. Both sets of gods are now against you." }
+    ], beneath:"<p>Here is the play's cleanest formulation of its own conflict. It is not, at bottom, religion against politics \u2014 both sides are pious. It is the gods above against the gods below, the city's order against the earth's, and [[creon|Creon]]'s error is to think he can serve one and ignore the other. Aeschylus would later stage the same collision in Athens and end it with a treaty; Sophocles ends it with a family annihilated. The debt gets paid either way.</p>", rels:[
+      { id:"unwritten_law", label:"whose laws these are" },
+      { id:"burial_rites", label:"which they demand" },
+      { id:"tiresias", label:"who reads their anger" },
+      { id:"tomb", label:"which belongs to them" },
+      { id:"creon", label:"who forgets them" }
+    ] },
+
+{ id:"aeschylus_note", name:"Aeschylus", type:"concept", tier:"minor", pron:"ESS-kih-lus", themes:["law"], essence:"The elder tragedian, a generation before Sophocles, who staged the same collision \u2014 blood against law \u2014 and resolved it with a courtroom instead of a catastrophe.", sections:[
+      { h:"The Other Answer", body:"Aeschylus (c. 458 BCE, a generation before this play) wrote the <em>Oresteia</em>, in which a family destroys itself through vengeance until a goddess convenes the first jury and hands judgement to the city. Blood-feud ends; law begins; the play closes with a procession and a blessing.\n\nSophocles looks at the same collision \u2014 the family's sacred claim against the city's law \u2014 and refuses the consolation. Here the city's law is the problem, not the cure, and nobody convenes anything. The house simply ends. Reading the two against each other is one of the sharpest things you can do with Greek tragedy: the same question, asked twenty years apart, answered with hope and then with nothing." }
+    ], rels:[
+      { id:"sophocles", label:"who came after him" },
+      { id:"unwritten_law", label:"the collision they share" }
+    ] },
+
+{ id:"women_polis", name:"Women and the City", type:"concept", tier:"supporting", themes:["power", "dead"], essence:"An Athenian woman had no vote, no property, and no public voice \u2014 which is why a girl standing in the open telling a king he is wrong was, to the first audience, genuinely shocking.", sections:[
+      { h:"The Rules She Breaks", body:"In [[sophocles|Sophocles']] Athens, a citizen woman did not speak in the assembly, could not vote, could not sue, could not own property of consequence, and was expected to be, as the saying went, least spoken of among men whether for praise or blame. Her sphere was the household \u2014 and, notably, the dead: mourning and [[burial_rites|burial]] were women's work.\n\n[[antigone|Antigone]] takes that domestic duty and carries it into the open, in daylight, against the state. She acts, argues, and refuses to be quiet. She does in public what a woman was permitted to do only in private." },
+      { h:"Why Creon Cannot Bear It", body:"Listen to what actually enrages [[creon|Creon]]. It is not the burial as such. It is that he is being beaten by a girl. He says it repeatedly, and with rising panic: if she gets away with this, then she is the man and he is not; while he lives, no woman will rule him; better to fall to a man than be called weaker than a woman.\n\nHe folds his political authority and his manhood into the same thing, so that yielding to [[antigone|Antigone]] on the law becomes indistinguishable from being unmanned by her. That is the trap he builds for himself, and it is the reason he cannot climb out of it in time." }
+    ], beneath:"<p>This is the vein modern productions most often work, and they are not importing it \u2014 it is in the text, insistently. [[ismene|Ismene]]'s refusal is explicitly framed in these terms: we are women, she says, we cannot fight men. [[antigone|Antigone]]'s answer is not that women can; it is that she does not care. And [[eurydice|Eurydice]], the queen, is given almost no words at all before she dies \u2014 the silent woman of the household, whose one act is to leave it.</p><p>The play does not argue for women's power. It stages a world in which a woman's only route to public moral action is to break the law and die for it \u2014 and then shows that she was right.</p>", rels:[
+      { id:"antigone", label:"who breaks the rules" },
+      { id:"creon", label:"who cannot be beaten by a girl" },
+      { id:"ismene", label:"who accepts the limits" },
+      { id:"eurydice", label:"the silent queen" },
+      { id:"burial_rites", label:"women's proper work" }
+    ] }
+
+];
+
+/* ============================================================
+   INDEX + LOOKUP
+   ============================================================ */
+var BYID = {};
+ENTITIES.forEach(function(e){ BYID[e.id] = e; });
+var THEMEBY = {};
+THEMES.forEach(function(t){ THEMEBY[t.id] = t; });
+var TIER_RANK = { major:0, supporting:1, minor:2 };
+
+/* ============================================================
+   linkify — one pass turns [[id|label]] into peek/commit terms,
+   validating the target exists.
+   ============================================================ */
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function linkify(str){
+  if(str == null) return "";
+  return String(str).replace(/\[\[([^\]|]+)\|([^\]]+)\]\]/g, function(m, id, label){
+    var ok = !!BYID[id];
+    var cls = ok ? "xref" : "xref broken";
+    return '<a class="'+cls+'" data-id="'+esc(id)+'" tabindex="0" role="button">'+esc(label)+'</a>';
+  });
+}
+/* prose bodies use \n\n for paragraph breaks */
+function paras(body){
+  return String(body).split(/\n\n+/).map(function(p){ return "<p>"+linkify(p)+"</p>"; }).join("");
+}
+function sceneParas(body){
+  return String(body).split(/\n\n+/).map(function(p){ return '<p class="bs">'+linkify(p)+'</p>'; }).join("");
+}
+
+/* ============================================================
+   VIEWS — one render function each, all reading shared data.
+   ============================================================ */
+var MODES = [
+  { hash:"#themes", label:"Themes" },
+  { hash:"#play",   label:"By the Play" },
+  { hash:"#house",  label:"The House" },
+  { hash:"#reference", label:"Index" }
+];
+
+function renderModes(active){
+  var nav = document.getElementById("modes");
+  nav.innerHTML = MODES.map(function(m){
+    var cur = (active === m.hash) ? ' aria-current="true"' : "";
+    return '<button'+cur+' onclick="go(\''+m.hash+'\')">'+m.label+'</button>';
+  }).join("");
+}
+
+function chip(e){
+  var maj = e.tier === "major" ? " major" : "";
+  var dot = e.tier === "major" ? '<span class="dotm"></span>' : "";
+  return '<button class="chip'+maj+'" data-id="'+e.id+'" onclick="go(\'#entity/'+e.id+'\')">'+
+         dot+esc(e.name)+'<span class="tag">'+TYPES[e.type]+'</span></button>';
+}
+
+function viewHome(){
+  renderModes("#home");
+  return '<div class="hero fade">'+
+    '<p class="eyebrow">Sophocles &middot; c. 441 BCE &middot; Thebes</p>'+
+    '<h1>A body left <span class="b">unburied</span>.<br>A handful of <span class="g">dust</span>.<br>A city against itself.</h1>'+
+    '<p class="lede">One brother is honored, the other forbidden a grave. A girl breaks the edict to bury him, and the ruler who forbade it cannot bend. This is a companion for wandering that collision \u2014 pick a way in.</p>'+
+    '<section class="orient fade">'+
+      '<h2 class="orient-h">Start here</h2>'+
+      '<p><b>What this is</b> <i>Antigone</i> (an-TIG-uh-nee) is a tragedy by the Athenian playwright Sophocles (SOF-uh-kleez), first staged around 441 BCE — one of the oldest and most-performed plays in the world.</p>'+
+      '<p><b>The situation</b> The Greek city of Thebes (THEEBZ) has just survived a civil war in which two brothers led opposite sides and killed each other. The new ruler, Creon (KREE-on), buries one with honor and forbids anyone, on pain of death, to bury the other. Antigone, the dead men’s sister, defies him and buries her brother anyway.</p>'+
+      '<p><b>The family behind it</b> Antigone is a daughter of Oedipus (ED-ih-pus), the king who unknowingly killed his father and married his mother. Her whole line lies under an old curse, and she is nearly the last of it.</p>'+
+      '<p><b>Why it lasts</b> It stages a collision with no clean winner — one person’s conscience and duty to the dead against the law of the state. Every age restages it to argue its own version of that fight.</p>'+
+      '<p><b>How to use this</b> Pick any way in below; nothing needs reading in order. Tap or hover any <span class="xhint">highlighted name</span> for a one-line who’s-this — and how to say it out loud.</p>'+
+    '</section>'+
+    '<div class="ways">'+
+      way("Themes","The four collisions","Law against the dead, the city against the family, the doom of a house \u2014 clustered by idea.","#themes")+
+      way("By the Play","Prologue to exodos","Walk the drama scene by scene, the great choral odes marked in bronze.","#play")+
+      way("The House","Two families, both undone","The line of Oedipus and the family of Creon \u2014 and the terrible symmetry between them.","#house")+
+      way("Index","Everyone and everything","An A\u2013Z of every figure, place, and idea, with its essence in a line.","#reference")+
+    '</div></div>';
+}
+function way(k,t,d,hash){
+  return '<button class="way" onclick="go(\''+hash+'\')"><span class="k">'+k+'</span>'+
+         '<span class="t">'+t+'</span><span class="d">'+d+'</span></button>';
+}
+
+function viewThemes(){
+  renderModes("#themes");
+  var html = '<div class="vhead fade"><p class="eyebrow">Ways in &middot; by idea</p>'+
+    '<h2>The four collisions</h2><p>Nothing in this play stands alone; every figure is pulled between at least two of these. Follow an idea and see who it catches.</p></div>';
+  THEMES.forEach(function(t){
+    var members = ENTITIES.filter(function(e){ return e.themes && e.themes.indexOf(t.id) >= 0; })
+      .sort(function(a,b){ return TIER_RANK[a.tier]-TIER_RANK[b.tier]; });
+    html += '<div class="cluster fade"><h3>'+esc(t.name)+'</h3>'+
+      '<p class="blurb">'+esc(t.blurb)+'</p>'+
+      '<div class="chips">'+members.map(chip).join("")+'</div></div>';
+  });
+  return html;
+}
+
+function viewPlay(){
+  renderModes("#play");
+  var html = '<div class="vhead fade"><p class="eyebrow">Ways in &middot; by the text</p>'+
+    '<h2>By the Play</h2><p>A Greek tragedy alternates spoken scenes with songs the chorus dances. The chorus’s entrance is the <i>parodos</i> (PAR-uh-dos); each standing song between scenes a <i>stasimon</i> (STAS-ih-mon); the final exit the <i>exodos</i> (EX-uh-dos). Odes are marked in bronze; every beat opens onto the figures who carry it.</p></div><div class="spine">';
+  SCENES.forEach(function(sc){
+    var od = sc.ode ? " ode" : "";
+    html += '<div class="beat'+od+' fade"><div class="bk">'+esc(sc.k)+(sc.g?'<span class="bkg">'+esc(sc.g)+'</span>':'')+'</div>'+
+      '<h4>'+esc(sc.h)+'</h4>'+sceneParas(sc.s)+
+      (sc.stage?'<details class="panel scene-stage"><summary><span class="pl">On the Stage</span><span class="pt">the craft</span><span class="mk">+</span></summary><div class="pbody">'+linkify(sc.stage)+'</div></details>':'')+
+      (sc.turns?'<details class="panel scene-turns"><summary><span class="pl">What Turns Here</span><span class="pt">the stakes</span><span class="mk">+</span></summary><div class="pbody">'+linkify(sc.turns)+'</div></details>':'')+
+      '</div>';
+  });
+  return html + '</div>';
+}
+
+function viewHouse(){
+  renderModes("#house");
+  function g(label, ids){
+    return '<div class="genlabel">'+label+'</div><div class="gen">'+
+      ids.map(function(id){ return BYID[id] ? chip(BYID[id]) : ""; }).join("")+'</div>';
+  }
+  var html = '<div class="vhead fade"><p class="eyebrow">Ways in &middot; by blood</p>'+
+    '<h2>The House</h2><p>Two families stand on either side of the edict. By the exodos both are wreckage \u2014 the play\u2019s cruelest symmetry.</p></div>'+
+    '<div class="houses">'+
+      '<div class="housecard fade"><h3>The Line of Oedipus</h3><p class="sub">the cursed house of Labdacus</p>'+
+        g("The children", ["polynices","eteocles","antigone","ismene"])+
+        g("The doom they carry", ["house_curse"])+
+      '</div>'+
+      '<div class="housecard fade"><h3>The Family of Creon</h3><p class="sub">the ruling house</p>'+
+        g("Ruler", ["creon"])+
+        g("Wife and son", ["eurydice","haemon"])+
+      '</div>'+
+    '</div>'+
+    '<p class="hinge fade">'+linkify('<b>The hinge:</b> Creon is brother to the dead queen Jocasta (joh-KAS-tuh) \u2014 so uncle to all four children. His son [[haemon|Haemon]] is promised to [[antigone|Antigone]]. Condemn her, and he destroys his own house through the marriage that was meant to join them. One edict, both families gone.')+'</p>';
+  return html;
+}
+
+function viewReference(){
+  renderModes("#reference");
+  var sorted = ENTITIES.slice().sort(function(a,b){ return a.name.replace(/^The /,"").localeCompare(b.name.replace(/^The /,"")); });
+  var rows = sorted.map(function(e){
+    return '<div class="refrow" onclick="go(\'#entity/'+e.id+'\')">'+
+      '<span class="rn">'+esc(e.name)+'</span>'+
+      '<span class="re">'+esc(e.essence)+'</span>'+
+      '<span class="rt">'+TYPES[e.type]+'</span></div>';
+  }).join("");
+  return '<div class="vhead fade"><p class="eyebrow">Ways in &middot; the reliable list</p>'+
+    '<h2>Index</h2><p>Everything in the companion, A to Z.</p></div><div class="refgrid fade">'+rows+'</div>';
+}
+
+function viewEntity(id){
+  var e = BYID[id];
+  if(!e){ return '<p>Nothing here by that name. <button class="backbtn" onclick="go(\'#reference\')">To the index</button></p>'; }
+  renderModes("");
+  var html = '<div class="backbar fade"><button class="backbtn" onclick="back()">&larr; Back</button></div>'+
+    '<article class="entity fade">'+
+    '<div class="kicker"><span>'+TYPES[e.type]+'</span><span class="tier">'+e.tier+'</span></div>'+
+    '<h1>'+esc(e.name)+'</h1>'+
+    (e.pron ? '<p class="pron">said <b>'+esc(e.pron)+'</b></p>' : "")+
+    (e.aka ? '<p class="aka">'+esc(e.aka)+'</p>' : "")+
+    '<p class="essence">'+linkify(e.essence)+'</p>';
+
+  if(e.sections && e.sections.length){
+    e.sections.forEach(function(s, i){
+      var open = i === 0 ? " open" : "";
+      html += '<details class="sec"'+open+'><summary><span class="h">'+esc(s.h)+'</span><span class="mk">+</span></summary>'+
+        '<div class="body">'+paras(s.body)+'</div></details>';
+    });
+  }
+  if(e.beneath){
+    html += '<details class="panel beneath"><summary><span class="pl">Beneath</span><span class="pt">the buried meaning</span><span class="mk">+</span></summary><div class="pbody">'+linkify(e.beneath)+'</div></details>';
+  }
+  if(e.beyond){
+    html += '<details class="panel beyond"><summary><span class="pl">Beyond</span><span class="pt">stage, history, afterlife</span><span class="mk">+</span></summary><div class="pbody">'+linkify(e.beyond)+'</div></details>';
+  }
+  if(e.rels && e.rels.length){
+    html += '<div class="rels"><h3>Connections</h3>'+
+      e.rels.map(function(r){
+        var t = BYID[r.id];
+        var nm = t ? t.name : r.id;
+        return '<div class="rel" onclick="go(\'#entity/'+r.id+'\')"><span class="rname">'+esc(nm)+'</span><span class="rlab">'+esc(r.label)+'</span></div>';
+      }).join("")+'</div>';
+  }
+  return html + '</article>';
+}
+
+/* ============================================================
+   ROUTER — hash based; one render per view; scroll restore.
+   ============================================================ */
+var scrollByHash = {};
+var lastHash = "#home";
+
+function render(){
+  var h = location.hash || "#home";
+  var view = document.getElementById("view");
+  var html;
+  if(h.indexOf("#entity/") === 0){ html = viewEntity(h.slice("#entity/".length)); }
+  else if(h === "#themes"){ html = viewThemes(); }
+  else if(h === "#play"){ html = viewPlay(); }
+  else if(h === "#house"){ html = viewHouse(); }
+  else if(h === "#reference"){ html = viewReference(); }
+  else { html = viewHome(); }
+  view.innerHTML = html;
+
+  if(scrollByHash[h] != null){ window.scrollTo(0, scrollByHash[h]); }
+  else { window.scrollTo(0, 0); }
+  try{ localStorage.setItem("antigone_last", h); }catch(err){}
+  lastHash = h;
+}
+
+function go(hash){
+  scrollByHash[lastHash] = window.scrollY;   /* remember where we were */
+  closePop();
+  if(location.hash === hash){ render(); }
+  else { location.hash = hash; }
+}
+function back(){
+  if(history.length > 1){ history.back(); }
+  else { go("#home"); }
+}
+window.addEventListener("hashchange", function(){ closePop(); render(); });
+
+/* ============================================================
+   POPOVER — peek on hover (fine pointers) / tap; commit on Open.
+   The dismiss click is consumed in the CAPTURE phase so it never
+   reaches whatever sits underneath. Nested xrefs stop their
+   container's handler.
+   ============================================================ */
+var pop = document.getElementById("pop");
+var canHover = window.matchMedia("(hover:hover) and (pointer:fine)").matches;
+var hideTimer = null;
+
+function openPop(anchor){
+  var id = anchor.getAttribute("data-id");
+  var e = BYID[id];
+  if(!e) return;
+  pop.innerHTML = '<p class="pk">'+TYPES[e.type]+' &middot; '+e.tier+'</p>'+
+    '<p class="pn">'+esc(e.name)+'</p>'+
+    (e.pron ? '<p class="ppron">said '+esc(e.pron)+'</p>' : "")+
+    '<p class="pe">'+esc(e.essence)+'</p>'+
+    '<button class="po" data-open="'+id+'">Open in full &rarr;</button>';
+  pop.classList.add("show");
+  position(anchor);
+}
+function position(anchor){
+  if(window.innerWidth <= 560) return; /* CSS pins to bottom sheet */
+  var r = anchor.getBoundingClientRect();
+  var pw = Math.min(320, window.innerWidth - 32);
+  var left = Math.min(Math.max(12, r.left), window.innerWidth - pw - 12);
+  pop.style.left = left + "px";
+  var below = r.bottom + 10;
+  var ph = pop.offsetHeight || 160;
+  if(below + ph > window.innerHeight - 12 && r.top - ph - 10 > 0){
+    pop.style.top = (r.top - ph - 10) + "px";
+  } else {
+    pop.style.top = below + "px";
+  }
+}
+function closePop(){ pop.classList.remove("show"); pop.innerHTML = ""; }
+var popOpen = function(){ return pop.classList.contains("show"); };
+
+/* CAPTURE-phase dismiss: if a tap lands outside an open popover,
+   consume it entirely so the element beneath does not also fire. */
+document.addEventListener("click", function(ev){
+  if(!popOpen()) return;
+  var openBtn = ev.target.closest ? ev.target.closest("[data-open]") : null;
+  if(openBtn){
+    ev.preventDefault(); ev.stopPropagation();
+    var id = openBtn.getAttribute("data-open");
+    closePop(); go("#entity/"+id);
+    return;
+  }
+  if(pop.contains(ev.target)) return;          /* inside popover: ignore */
+  var xref = ev.target.closest ? ev.target.closest(".xref") : null;
+  if(xref && xref.getAttribute("data-id") === currentPopId){ return; } /* re-tap same anchor handled below */
+  /* genuine dismiss: swallow the click */
+  ev.preventDefault(); ev.stopPropagation();
+  closePop();
+}, true);
+
+var currentPopId = null;
+
+/* xref tap: open popover (peek). stopPropagation keeps any parent
+   card/chip handler from firing on the same click. */
+document.addEventListener("click", function(ev){
+  var xref = ev.target.closest ? ev.target.closest(".xref") : null;
+  if(!xref) return;
+  ev.preventDefault(); ev.stopPropagation();
+  if(xref.classList.contains("broken")) return;
+  if(popOpen() && currentPopId === xref.getAttribute("data-id")){ closePop(); currentPopId = null; return; }
+  currentPopId = xref.getAttribute("data-id");
+  openPop(xref);
+});
+/* keyboard: Enter/Space on a focused xref */
+document.addEventListener("keydown", function(ev){
+  if((ev.key === "Enter" || ev.key === " ") && ev.target.classList && ev.target.classList.contains("xref")){
+    ev.preventDefault(); currentPopId = ev.target.getAttribute("data-id"); openPop(ev.target);
+  }
+  if(ev.key === "Escape"){ closePop(); currentPopId = null; }
+});
+
+/* hover peek on desktop */
+if(canHover){
+  document.addEventListener("mouseover", function(ev){
+    var xref = ev.target.closest ? ev.target.closest(".xref") : null;
+    if(!xref || xref.classList.contains("broken")) return;
+    clearTimeout(hideTimer);
+    currentPopId = xref.getAttribute("data-id");
+    openPop(xref);
+  });
+  document.addEventListener("mouseout", function(ev){
+    var xref = ev.target.closest ? ev.target.closest(".xref") : null;
+    var toPop = ev.relatedTarget && pop.contains(ev.relatedTarget);
+    if(xref && !toPop){
+      hideTimer = setTimeout(function(){ if(!pop.matches(":hover")) closePop(); }, 120);
+    }
+  });
+  pop.addEventListener("mouseleave", function(){ hideTimer = setTimeout(closePop, 120); });
+  pop.addEventListener("mouseenter", function(){ clearTimeout(hideTimer); });
+}
+window.addEventListener("resize", closePop);
+window.addEventListener("scroll", function(){ if(popOpen() && window.innerWidth > 560){ closePop(); } }, {passive:true});
+
+/* ============================================================
+   BOOT
+   ============================================================ */
+if(!location.hash){
+  var saved = null;
+  try{ saved = localStorage.getItem("antigone_last"); }catch(err){}
+  location.hash = saved || "#home";
+} else {
+  render();
+}
+if(!location.hash) render();
+</script>
+</body>
+</html>
